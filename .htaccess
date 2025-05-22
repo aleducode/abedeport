@@ -1,0 +1,15 @@
+#Activar motor de reescritura de url
+RewriteEngine on
+
+#Evitar listar los archivos de la carpeta
+Options All -Indexes
+
+#Ocultar las extensiones de los archivos php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php [NC]
+
+#Ocultar las extensiones de los archivos html
+RewriteCond %{REQUEST_FILENAME} !-d                                                                                                                                                                                                                                                                                                                          
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.*)$ $1.html [NC]
