@@ -4,12 +4,17 @@ RewriteEngine on
 #Evitar listar los archivos de la carpeta
 Options All -Indexes
 
-#Ocultar las extensiones de los archivos php
+# Handle /app/ prefix - redirect /app/app/ to /app/
+RewriteRule ^app/app/(.*)$ app/$1 [R=301,L]
+
+# If the request is not a file or directory, try to serve .php file
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule ^(.*)$ $1.php [NC]
+RewriteRule ^(.+)$ $1.php [L,QSA]
 
 #Ocultar las extensiones de los archivos html
-RewriteCond %{REQUEST_FILENAME} !-d                                                                                                                                                                                                                                                                                                                          
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME}.html -f
-RewriteRule ^(.*)$ $1.html [NC]
+RewriteRule ^(.+)$ $1.html [L,QSA]

@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # PHP Application
+  app:
+    build: .
+    container_name: abedeport-app
+    platform: linux/amd64
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/var/www/html/app
+      - ./assets:/var/www/html/assets
+      - ./index.html:/var/www/html/index.html
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=ABEDEPORT
+      - DB_USER=abedeport_user
+      - DB_PASSWORD=abedeport_password
+    networks:
+      - abedeport-network
+    restart: unless-stopped
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: abedeport-db
+    platform: linux/amd64
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: ABEDEPORT
+      MYSQL_USER: abedeport_user
+      MYSQL_PASSWORD: abedeport_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - abedeport-network
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+
+  # phpMyAdmin for database management
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: abedeport-phpmyadmin
+    platform: linux/amd64
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: abedeport_user
+      PMA_PASSWORD: abedeport_password
+      MYSQL_ROOT_PASSWORD: root_password
+    depends_on:
+      - db
+    networks:
+      - abedeport-network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  abedeport-network:
+    driver: bridge
