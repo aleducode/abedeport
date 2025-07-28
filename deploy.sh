@@ -26,13 +26,13 @@ fi
 echo -e "${YELLOW}📁 Creating required directories...${NC}"
 mkdir -p compose/production/traefik
 
-# Pull latest images
-echo -e "${YELLOW}📥 Pulling latest Docker images...${NC}"
-docker-compose -f production.yml pull
-
 # Stop existing containers
 echo -e "${YELLOW}🛑 Stopping existing containers...${NC}"
 docker-compose -f production.yml down
+
+# Pull only pullable images (skip custom builds)
+echo -e "${YELLOW}📥 Pulling base Docker images...${NC}"
+docker-compose -f production.yml pull db phpmyadmin || echo "Some images will be built locally"
 
 # Build and start services
 echo -e "${YELLOW}🔨 Building and starting services...${NC}"
