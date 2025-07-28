@@ -15,7 +15,9 @@ NC='\033[0m' # No Color
 # Check if .env file exists
 if [ ! -f .env ]; then
     echo -e "${YELLOW}⚠️  .env file not found. Creating from template...${NC}"
-    cp .env.production .env
+    if [ -f .env.production ]; then
+        cp .env.production .env
+    fi
     echo -e "${RED}❌ Please edit .env file with your production values before continuing!${NC}"
     exit 1
 fi
