@@ -17,6 +17,7 @@ services:
       - ./admin:/var/www/html/admin
       - ./assets:/var/www/html/assets
       - ./noticias:/var/www/html/noticias
+      - ./apache-config/000-default.conf:/etc/apache2/sites-available/000-default.conf
     depends_on:
       - db
     environment:

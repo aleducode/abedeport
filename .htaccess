@@ -5,7 +5,7 @@ RewriteEngine on
 Options All -Indexes
 
 # Handle /app/ prefix - redirect /app/app/ to /app/
-RewriteRule ^app/app/(.*)$ app/$1 [R=301,L]
+# RewriteRule ^app/app/(.*)$ app/$1 [R=301,L]
 
 # If the request is not a file or directory, try to serve .php file
 RewriteCond %{REQUEST_FILENAME} !-d

@@ -32,7 +32,6 @@ http:
       middlewares:
         - security-headers
       service: abedeport-app
-      priority: 1
       tls:
         certResolver: letsencrypt
 
@@ -44,7 +43,6 @@ http:
       middlewares:
         - security-headers
       service: phpmyadmin
-      priority: 1
       tls:
         certResolver: letsencrypt
 
@@ -64,7 +62,7 @@ http:
         stsSeconds: 31536000
         stsIncludeSubdomains: true
         stsPreload: true
-  
+
   services:
     abedeport-app:
       loadBalancer:
