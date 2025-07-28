@@ -19,6 +19,7 @@ services:
       - ./admin:/var/www/html/admin
       - ./assets:/var/www/html/assets
       - ./noticias:/var/www/html/noticias
+      - ./index.html:/var/www/html/index.html
       - ./apache-config/000-default.conf:/etc/apache2/sites-available/000-default.conf
       - ./docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
     depends_on:

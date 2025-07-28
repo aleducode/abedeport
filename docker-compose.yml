@@ -12,7 +12,7 @@ services:
       - ./admin:/var/www/html/admin
       - ./assets:/var/www/html/assets
       - ./noticias:/var/www/html/noticias
-      - ./index.php:/var/www/html/index.php
+      - ./index.html:/var/www/html/index.html
       - ./check_db.php:/var/www/html/check_db.php
       - ./install_blog.php:/var/www/html/install_blog.php
       - ./test_encoding.php:/var/www/html/test_encoding.php
