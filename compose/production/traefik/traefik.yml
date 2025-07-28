@@ -23,15 +23,6 @@ certificatesResolvers:
 
 http:
   routers:
-    # Health check router
-    health-router:
-      rule: "Path(`/health/`)"
-      entryPoints:
-        - websecure
-      service: abedeport-app
-      priority: 2
-      tls:
-        certResolver: letsencrypt
 
     # Main application router
     web-router:
@@ -52,7 +43,6 @@ http:
         - websecure
       middlewares:
         - security-headers
-        - basic-auth
       service: phpmyadmin
       priority: 1
       tls:
@@ -74,12 +64,7 @@ http:
         stsSeconds: 31536000
         stsIncludeSubdomains: true
         stsPreload: true
-
-    basic-auth:
-      basicAuth:
-        users:
-          - "admin:$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi"  # admin:admin
-
+  
   services:
     abedeport-app:
       loadBalancer:
