@@ -28,6 +28,9 @@ WORKDIR /var/www/html
 # Copy application files
 COPY . /var/www/html/
 
+# Remove the empty index.html directory if it exists
+RUN rm -rf /var/www/html/index.html/
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html

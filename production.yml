@@ -10,7 +10,9 @@ networks:
 services:
   # PHP Application
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
     container_name: abedeport-app
     restart: unless-stopped
     volumes:

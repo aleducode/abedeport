@@ -1,7 +1,9 @@
 services:
   # PHP Application
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     container_name: abedeport-app
     platform: linux/amd64
     ports:
@@ -10,6 +12,10 @@ services:
       - ./admin:/var/www/html/admin
       - ./assets:/var/www/html/assets
       - ./noticias:/var/www/html/noticias
+      - ./index.php:/var/www/html/index.php
+      - ./check_db.php:/var/www/html/check_db.php
+      - ./install_blog.php:/var/www/html/install_blog.php
+      - ./test_encoding.php:/var/www/html/test_encoding.php
     depends_on:
       - db
     environment:

@@ -1,0 +1,44 @@
+FROM php:8.2-apache
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    zip \
+    unzip \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+    gd \
+    pdo \
+    pdo_mysql \
+    mysqli
+
+# Enable Apache modules
+RUN a2enmod rewrite
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Set permissions for development (more permissive)
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 777 /var/www/html
+
+# Enable error reporting for development
+RUN echo "display_errors = On" >> /usr/local/etc/php/conf.d/development.ini \
+    && echo "error_reporting = E_ALL" >> /usr/local/etc/php/conf.d/development.ini \
+    && echo "log_errors = On" >> /usr/local/etc/php/conf.d/development.ini
+
+# Set ServerName to suppress Apache warning
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# Expose port 80
+EXPOSE 80
+
+# Start Apache
+CMD ["apache2-foreground"]
