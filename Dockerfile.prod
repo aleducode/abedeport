@@ -23,9 +23,6 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 RUN a2enmod rewrite
 
 # Copy and setup entrypoint script to fix permissions on volume mounts
-COPY fix-permissions.sh /usr/local/bin/fix-permissions.sh
-RUN chmod +x /usr/local/bin/fix-permissions.sh
-
 # Set working directory
 WORKDIR /var/www/html
 
@@ -46,5 +43,4 @@ RUN echo "ServerName abedeport.abejorralmuchopueblo.com" >> /etc/apache2/apache2
 EXPOSE 80
 
 # Start Apache with permission fix
-ENTRYPOINT ["/usr/local/bin/fix-permissions.sh"]
 CMD ["apache2-foreground"] 
