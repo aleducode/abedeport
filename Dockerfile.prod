@@ -20,7 +20,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     mysqli
 
 # Enable Apache modules
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers ssl
 
 # Set working directory
 WORKDIR /var/www/html
@@ -31,18 +31,53 @@ COPY . /var/www/html/
 # Remove the empty index.html directory if it exists
 RUN rm -rf /var/www/html/index.html/
 
-# Set ServerName to suppress Apache warning
-RUN echo "ServerName abedeport.abejorralmuchopueblo.com" >> /etc/apache2/apache2.conf
+# Set initial permissions for copied files
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
 
-# Create a startup script that fixes permissions and starts Apache
+# Set ServerName to suppress Apache warning
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# Create a startup script that fixes permissions for mounted volumes and starts Apache
 RUN echo '#!/bin/bash\n\
-# Set proper permissions for mounted volumes\n\
-chown -R www-data:www-data /var/www/html\n\
-chmod -R 755 /var/www/html\n\
+echo "Starting ABEDEPORT Application..."\n\
 \n\
+# Fix permissions for mounted volumes (this handles the admin, assets, noticias folders)\n\
+echo "Fixing permissions for mounted volumes..."\n\
+if [ -d "/var/www/html/admin" ]; then\n\
+    chown -R www-data:www-data /var/www/html/admin\n\
+    chmod -R 755 /var/www/html/admin\n\
+fi\n\
+\n\
+if [ -d "/var/www/html/assets" ]; then\n\
+    chown -R www-data:www-data /var/www/html/assets\n\
+    chmod -R 755 /var/www/html/assets\n\
+fi\n\
+\n\
+if [ -d "/var/www/html/noticias" ]; then\n\
+    chown -R www-data:www-data /var/www/html/noticias\n\
+    chmod -R 755 /var/www/html/noticias\n\
+fi\n\
+\n\
+# Ensure the main index file has correct permissions\n\
+if [ -f "/var/www/html/index.html" ]; then\n\
+    chown www-data:www-data /var/www/html/index.html\n\
+    chmod 644 /var/www/html/index.html\n\
+fi\n\
+\n\
+# Set ServerName dynamically if provided via environment\n\
+if [ ! -z "$APACHE_SERVER_NAME" ]; then\n\
+    echo "ServerName $APACHE_SERVER_NAME" >> /etc/apache2/apache2.conf\n\
+fi\n\
+\n\
+echo "Starting Apache..."\n\
 # Start Apache in foreground\n\
 exec apache2-foreground' > /usr/local/bin/startup.sh && \
     chmod +x /usr/local/bin/startup.sh
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost/ || exit 1
 
 # Expose port 80
 EXPOSE 80

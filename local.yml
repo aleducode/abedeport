@@ -1,0 +1,86 @@
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  abedeport-network:
+    driver: bridge
+
+services:
+  # PHP Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: abedeport-app-local
+    restart: unless-stopped
+    volumes:
+      - ./admin:/var/www/html/admin
+      - ./assets:/var/www/html/assets
+      - ./noticias:/var/www/html/noticias
+      - ./index.html:/var/www/html/index.html
+      - ./apache-config/000-default.conf:/etc/apache2/sites-available/000-default.conf
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=ABEDEPORT
+      - DB_USER=abedeport_user
+      - DB_PASSWORD=abedeport_local_password
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APACHE_SERVER_NAME=localhost
+    networks:
+      - abedeport-network
+    ports:
+      - "80:80"  # Direct port mapping for local development
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: abedeport-db-local
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_local_password
+      MYSQL_DATABASE: ABEDEPORT
+      MYSQL_USER: abedeport_user
+      MYSQL_PASSWORD: abedeport_local_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - abedeport-network
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_local_password"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # phpMyAdmin for database management (local access)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: abedeport-phpmyadmin-local
+    restart: unless-stopped
+    ports:
+      - "8081:80"  # Direct port mapping for local access
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: abedeport_user
+      PMA_PASSWORD: abedeport_local_password
+      MYSQL_ROOT_PASSWORD: root_local_password
+      PMA_ABSOLUTE_URI: http://localhost:8081/
+    depends_on:
+      - db
+    networks:
+      - abedeport-network 

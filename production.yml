@@ -67,6 +67,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/my.cnf:/etc/mysql/conf.d/my.cnf
     networks:
       - abedeport-network
     command: --default-authentication-plugin=mysql_native_password
