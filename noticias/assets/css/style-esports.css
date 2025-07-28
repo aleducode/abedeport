@@ -129,11 +129,11 @@ body {
   margin: 0 auto;
 }
 #jprePercentage::before {
-  content: "Loading...";
+  content: "Cargando...";
   color: #fff;
 }
 #jprePercentage::after {
-  content: "Alchemists Template";
+  content: "Abedeport";
   display: block;
   font-size: 8px;
   line-height: 1.5em;
@@ -7984,7 +7984,7 @@ div.cs-skin-border li.cs-focus span {
     right: 0;
     top: 0;
     bottom: 0;
-    background-image: url("../../assets/images/gridtile_4x4.gif");
+    background-image: url("../../../assets/img/hero.jpg");
     background-size: 4px 4px;
     background-position: 100% 0;
     background-repeat: repeat;
@@ -13003,7 +13003,7 @@ input.header-mobile__search-control:focus {
   right: 0;
   top: 0;
   bottom: 0;
-  background-image: url("../../assets/images/gridtile_4x4.gif");
+  background-image: url("../../../assets/img/hero.jpg");
   background-size: 4px 4px;
   background-position: 100% 0;
   background-repeat: repeat;
@@ -36914,7 +36914,7 @@ select.form-control {
 }
 
 .tp-dottedoverlay.fourxfour {
-  background-image: url("../../assets/images/gridtile_4x4.gif");
+  background-image: url("../../../assets/img/hero.jpg");
 }
 
 .alc-hero-slider__h {

@@ -1,0 +1,89 @@
+version: '3.8'
+
+volumes:
+  production_traefik: {}
+  mysql_data:
+    driver: local
+
+networks:
+  abedeport-network:
+    driver: bridge
+
+services:
+  # PHP Application
+  app:
+    build: .
+    container_name: abedeport-app
+    platform: linux/amd64
+    restart: unless-stopped
+    volumes:
+      - ./admin:/var/www/html/admin
+      - ./assets:/var/www/html/assets
+      - ./noticias:/var/www/html/noticias
+      - ./index.html:/var/www/html/index.html
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=ABEDEPORT
+      - DB_USER=abedeport_user
+      - DB_PASSWORD=${DB_PASSWORD:-abedeport_strong_password}
+      - APP_ENV=production
+      - APP_DEBUG=false
+    networks:
+      - abedeport-network
+
+  # Traefik Reverse Proxy
+  traefik:
+    build:
+      context: .
+      dockerfile: ./compose/production/traefik/Dockerfile
+    image: abedeport_production_traefik
+    container_name: abedeport-traefik
+    restart: unless-stopped
+    depends_on:
+      - app
+    volumes:
+      - production_traefik:/etc/traefik/acme
+    ports:
+      - '80:80'
+      - '443:443'
+    networks:
+      - abedeport-network
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: abedeport-db
+    platform: linux/amd64
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_strong_password}
+      MYSQL_DATABASE: ABEDEPORT
+      MYSQL_USER: abedeport_user
+      MYSQL_PASSWORD: ${DB_PASSWORD:-abedeport_strong_password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - abedeport-network
+    command: --default-authentication-plugin=mysql_native_password
+
+  # phpMyAdmin for database management
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: abedeport-phpmyadmin
+    platform: linux/amd64
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: abedeport_user
+      PMA_PASSWORD: ${DB_PASSWORD:-abedeport_strong_password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_strong_password}
+    depends_on:
+      - db
+    networks:
+      - abedeport-network

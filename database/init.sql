@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS `ABEDEPORT`.`usuario` (
   `correo` VARCHAR(100) NOT NULL,
   `documento` VARCHAR(15) NOT NULL,
   `estado` TINYINT NULL,
+  `is_admin` TINYINT(1) DEFAULT 0,
   `password` VARCHAR(255) NOT NULL,
   `red_social` VARCHAR(45) NOT NULL DEFAULT '',
   PRIMARY KEY (`id_usuario`),
@@ -37,87 +38,6 @@ CREATE TABLE IF NOT EXISTS `ABEDEPORT`.`usuario` (
   UNIQUE INDEX `documento_UNIQUE` (`documento` ASC))
 ENGINE = InnoDB;
 
--- -----------------------------------------------------
--- Table `ABEDEPORT`.`espacio`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `ABEDEPORT`.`espacio` ;
-
-CREATE TABLE IF NOT EXISTS `ABEDEPORT`.`espacio` (
-  `id_espacio` INT NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(45) NULL,
-  PRIMARY KEY (`id_espacio`))
-ENGINE = InnoDB;
-
--- -----------------------------------------------------
--- Table `ABEDEPORT`.`equipo`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `ABEDEPORT`.`equipo` ;
-
-CREATE TABLE IF NOT EXISTS `ABEDEPORT`.`equipo` (
-  `id_equipo` INT NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(100) NOT NULL,
-  `disiplina` VARCHAR(50) NOT NULL,
-  `categoria` VARCHAR(50) NOT NULL,
-  PRIMARY KEY (`id_equipo`),
-  UNIQUE INDEX `nombre_UNIQUE` (`nombre` ASC))
-ENGINE = InnoDB;
-
--- -----------------------------------------------------
--- Table `ABEDEPORT`.`evento`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `ABEDEPORT`.`evento` ;
-
-CREATE TABLE IF NOT EXISTS `ABEDEPORT`.`evento` (
-  `id_evento` INT NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(100) NOT NULL,
-  `hora_inicio` TIME NOT NULL,
-  `fecha` DATE NOT NULL,
-  `hora_fin` TIME NOT NULL,
-  `tipo_evento` TINYINT NOT NULL,
-  `espacio_id_espacio` INT NOT NULL,
-  `equipo_id_equipo` INT NOT NULL,
-  PRIMARY KEY (`id_evento`),
-  INDEX `fk_evento_espacio_idx` (`espacio_id_espacio` ASC),
-  INDEX `fk_evento_equipo1_idx` (`equipo_id_equipo` ASC),
-  CONSTRAINT `fk_evento_espacio`
-    FOREIGN KEY (`espacio_id_espacio`)
-    REFERENCES `ABEDEPORT`.`espacio` (`id_espacio`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_evento_equipo1`
-    FOREIGN KEY (`equipo_id_equipo`)
-    REFERENCES `ABEDEPORT`.`equipo` (`id_equipo`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
--- -----------------------------------------------------
--- Table `ABEDEPORT`.`jugador`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `ABEDEPORT`.`jugador` ;
-
-CREATE TABLE IF NOT EXISTS `ABEDEPORT`.`jugador` (
-  `id_jugador` INT NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(100) NOT NULL,
-  `edad` INT NOT NULL,
-  `foto` BLOB NULL,
-  `equipo_id_equipo` INT NOT NULL,
-  `usuario_id_usuario` INT NOT NULL,
-  PRIMARY KEY (`id_jugador`),
-  UNIQUE INDEX `nombre_UNIQUE` (`nombre` ASC),
-  INDEX `fk_jugador_equipo1_idx` (`equipo_id_equipo` ASC),
-  INDEX `fk_jugador_usuario1_idx` (`usuario_id_usuario` ASC),
-  CONSTRAINT `fk_jugador_equipo1`
-    FOREIGN KEY (`equipo_id_equipo`)
-    REFERENCES `ABEDEPORT`.`equipo` (`id_equipo`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_jugador_usuario1`
-    FOREIGN KEY (`usuario_id_usuario`)
-    REFERENCES `ABEDEPORT`.`usuario` (`id_usuario`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `ABEDEPORT`.`blog_posts`
@@ -153,51 +73,88 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 
 -- Insert sample usuarios
-INSERT INTO usuario (nombre, apellido, correo, documento, estado, password, red_social) VALUES 
-('Administrador', 'Sistema', 'admin@abedeport.com', '12345678', 1, '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin'),
-('Juan', 'Pérez', 'juan.perez@email.com', '87654321', 1, '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'facebook'),
-('María', 'García', 'maria.garcia@email.com', '11223344', 1, '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instagram')
+INSERT INTO usuario (nombre, apellido, correo, documento, estado, is_admin, password, red_social) VALUES 
+('Administrador', 'Sistema', 'admin@abedeport.com', '12345678', 1, 1, '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin'),
+('Juan', 'Pérez', 'juan.perez@email.com', '87654321', 1, 0, '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'facebook'),
+('María', 'García', 'maria.garcia@email.com', '11223344', 1, 0, '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instagram')
 ON DUPLICATE KEY UPDATE id_usuario = id_usuario;
 
--- Insert sample espacios
-INSERT INTO espacio (nombre) VALUES 
-('Cancha de Fútbol'),
-('Gimnasio'),
-('Piscina'),
-('Pista de Atletismo'),
-('Cancha de Baloncesto')
-ON DUPLICATE KEY UPDATE id_espacio = id_espacio;
 
--- Insert sample equipos
-INSERT INTO equipo (nombre, disiplina, categoria) VALUES 
-('Leones FC', 'Fútbol', 'Senior'),
-('Águilas BB', 'Baloncesto', 'Juvenil'),
-('Tiburones Nat', 'Natación', 'Infantil'),
-('Runners AT', 'Atletismo', 'Senior')
-ON DUPLICATE KEY UPDATE id_equipo = id_equipo;
+-- -----------------------------------------------------
+-- Table `ABEDEPORT`.`tournaments`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `ABEDEPORT`.`tournaments` ;
 
--- Insert sample eventos
-INSERT INTO evento (nombre, hora_inicio, fecha, hora_fin, tipo_evento, espacio_id_espacio, equipo_id_equipo) VALUES 
-('Entrenamiento Fútbol', '08:00:00', '2025-01-15', '10:00:00', 1, 1, 1),
-('Partido Baloncesto', '15:00:00', '2025-01-16', '17:00:00', 2, 5, 2),
-('Clase Natación', '14:00:00', '2025-01-17', '15:30:00', 1, 3, 3),
-('Carrera Atletismo', '07:00:00', '2025-01-18', '09:00:00', 2, 4, 4)
-ON DUPLICATE KEY UPDATE id_evento = id_evento;
+CREATE TABLE IF NOT EXISTS `ABEDEPORT`.`tournaments` (
+  `id_tournament` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(100) NOT NULL,
+  `deporte` ENUM('futbol', 'futsal', 'baloncesto', 'voleibol') NOT NULL,
+  `temporada` VARCHAR(50) NOT NULL,
+  `estado` ENUM('activo', 'finalizado', 'proximo') DEFAULT 'activo',
+  `fecha_inicio` DATE,
+  `fecha_fin` DATE,
+  PRIMARY KEY (`id_tournament`))
+ENGINE = InnoDB;
 
--- Insert sample jugadores
-INSERT INTO jugador (nombre, edad, equipo_id_equipo, usuario_id_usuario) VALUES 
-('Carlos López', 25, 1, 2),
-('Ana Rodríguez', 18, 2, 3),
-('Luis Martínez', 12, 3, 2),
-('Sofia Torres', 30, 4, 3)
-ON DUPLICATE KEY UPDATE id_jugador = id_jugador;
+-- -----------------------------------------------------
+-- Table `ABEDEPORT`.`equipos_tournament`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `ABEDEPORT`.`equipos_tournament` ;
+
+CREATE TABLE IF NOT EXISTS `ABEDEPORT`.`equipos_tournament` (
+  `id_equipo_tournament` INT NOT NULL AUTO_INCREMENT,
+  `id_tournament` INT NOT NULL,
+  `nombre_equipo` VARCHAR(100) NOT NULL,
+  `ciudad` VARCHAR(100) NULL,
+  `pais` VARCHAR(100) NULL,
+  `logo` VARCHAR(255) NULL,
+  `partidos_jugados` INT DEFAULT 0,
+  `partidos_ganados` INT DEFAULT 0,
+  `partidos_perdidos` INT DEFAULT 0,
+  `partidos_empatados` INT DEFAULT 0,
+  `puntos_favor` INT DEFAULT 0,
+  `puntos_contra` INT DEFAULT 0,
+  `puntos_totales` INT DEFAULT 0,
+  `posicion` INT NULL,
+  `destacado` TINYINT(1) DEFAULT 0,
+  PRIMARY KEY (`id_equipo_tournament`),
+  INDEX `fk_equipos_tournament_tournaments_idx` (`id_tournament` ASC),
+  INDEX `idx_tournament_posicion` (`id_tournament` ASC, `posicion` ASC),
+  CONSTRAINT `fk_equipos_tournament_tournaments`
+    FOREIGN KEY (`id_tournament`)
+    REFERENCES `ABEDEPORT`.`tournaments` (`id_tournament`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
 
 -- Insert sample blog posts
 INSERT INTO blog_posts (titulo, contenido, autor_id, estado, fecha_publicacion, slug, meta_descripcion, etiquetas) VALUES 
-('Bienvenidos a AEDEPORT', 'Somos una organización dedicada al desarrollo deportivo y la recreación. Nuestro objetivo es promover un estilo de vida saludable a través del deporte.', 1, 'publicado', NOW(), 'bienvenidos-aededeport', 'Descubre AEDEPORT, tu organización deportiva líder en recreación y desarrollo deportivo.', 'deporte, recreación, salud'),
-('Nuevos Programas de Entrenamiento', 'Hemos implementado nuevos programas de entrenamiento para todas las edades y niveles. Incluyen fútbol, baloncesto, natación y atletismo.', 1, 'publicado', NOW(), 'nuevos-programas-entrenamiento', 'Conoce nuestros nuevos programas de entrenamiento deportivo para todas las edades.', 'entrenamiento, programas, deporte'),
-('Resultados del Torneo Regional', 'Nuestros equipos obtuvieron excelentes resultados en el torneo regional. Los Leones FC se coronaron campeones en fútbol.', 1, 'publicado', NOW(), 'resultados-torneo-regional', 'Celebra con nosotros los logros de nuestros equipos en el torneo regional.', 'torneo, resultados, campeones')
+('Bienvenidos a AEDEPORT', 'Somos una organización dedicada al desarrollo deportivo y la recreación. Nuestro objetivo es promover un estilo de vida saludable a través del deporte.', 1, 'publicado', NOW(), 'bienvenidos-aededeport', 'Descubre AEDEPORT, tu organización deportiva líder en recreación y desarrollo deportivo.', 'futbol, baloncesto'),
+('Nuevos Programas de Entrenamiento', 'Hemos implementado nuevos programas de entrenamiento para todas las edades y niveles. Incluyen fútbol, baloncesto, futsal y voleibol.', 1, 'publicado', NOW(), 'nuevos-programas-entrenamiento', 'Conoce nuestros nuevos programas de entrenamiento deportivo para todas las edades.', 'futbol, futsal, baloncesto, voleibol'),
+('Resultados del Torneo Regional', 'Nuestros equipos obtuvieron excelentes resultados en el torneo regional. Los Leones FC se coronaron campeones en fútbol.', 1, 'publicado', NOW(), 'resultados-torneo-regional', 'Celebra con nosotros los logros de nuestros equipos en el torneo regional.', 'futbol'),
+('Torneo Multideporte AEDEPORT 2025', 'Gran evento que incluye competencias de múltiples deportes. Participan equipos de fútbol, baloncesto y voleibol en una experiencia deportiva única.', 1, 'publicado', NOW(), 'torneo-multideporte-2025', 'Evento multideporte con fútbol, baloncesto y voleibol', 'futbol, baloncesto, voleibol')
 ON DUPLICATE KEY UPDATE id_post = id_post;
+
+-- Insert sample tournaments
+INSERT INTO tournaments (nombre, deporte, temporada, estado, fecha_inicio, fecha_fin) VALUES 
+('Liga Profesional de Fútbol', 'futbol', '2025', 'activo', '2025-01-01', '2025-06-30'),
+('Copa Nacional de Futsal', 'futsal', '2025', 'activo', '2025-02-01', '2025-05-30'),
+('Torneo de Baloncesto Regional', 'baloncesto', '2025', 'activo', '2025-01-15', '2025-07-15'),
+('Liga de Voleibol Profesional', 'voleibol', '2025', 'activo', '2025-03-01', '2025-08-30')
+ON DUPLICATE KEY UPDATE id_tournament = id_tournament;
+
+-- Insert sample tournament standings
+INSERT INTO equipos_tournament (id_tournament, nombre_equipo, ciudad, pais, logo, partidos_jugados, partidos_ganados, partidos_perdidos, partidos_empatados, puntos_favor, puntos_contra, puntos_totales, posicion, destacado) VALUES 
+(1, 'Real Madrid Deportivo', 'Madrid', 'España', 'assets/images/esports/logos/alchemists-22x25.png', 16, 14, 2, 0, 28, 14, 42, 1, 0),
+(1, 'FC Barcelona Elite', 'Barcelona', 'España', 'assets/images/esports/logos/alchemists-22x25.png', 16, 12, 4, 0, 27, 13, 36, 2, 0),
+(1, 'Club Deportivo AEDEPORT', 'Medellín', 'Colombia', 'assets/images/esports/logos/alchemists-22x25.png', 16, 11, 5, 0, 26, 11, 33, 3, 1),
+(1, 'Atlético Valencia', 'Valencia', 'España', 'assets/images/esports/logos/alchemists-22x25.png', 16, 9, 7, 0, 20, 19, 27, 4, 0),
+(1, 'Sevilla FC Pro', 'Sevilla', 'España', 'assets/images/esports/logos/alchemists-22x25.png', 16, 8, 8, 0, 18, 22, 24, 5, 0),
+(3, 'Lakers AEDEPORT', 'Los Ángeles', 'Colombia', 'assets/images/esports/logos/alchemists-22x25.png', 20, 18, 2, 0, 1850, 1620, 36, 1, 1),
+(3, 'Warriors Elite', 'San Francisco', 'Estados Unidos', 'assets/images/esports/logos/alchemists-22x25.png', 20, 16, 4, 0, 1780, 1650, 32, 2, 0),
+(3, 'Celtics Pro', 'Boston', 'Estados Unidos', 'assets/images/esports/logos/alchemists-22x25.png', 20, 14, 6, 0, 1720, 1680, 28, 3, 0),
+(3, 'Heat Miami', 'Miami', 'Estados Unidos', 'assets/images/esports/logos/alchemists-22x25.png', 20, 12, 8, 0, 1680, 1720, 24, 4, 0)
+ON DUPLICATE KEY UPDATE id_equipo_tournament = id_equipo_tournament;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

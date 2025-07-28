@@ -1,3 +1,162 @@
+<?php
+session_start();
+// Include database connection
+require_once '../admin/conn.php';
+
+// Function to fetch news from database
+function getLatestNews($conn, $limit = 6) {
+    try {
+        $stmt = $conn->prepare("
+            SELECT bp.*, u.nombre, u.apellido 
+            FROM blog_posts bp 
+            JOIN usuario u ON bp.autor_id = u.id_usuario 
+            WHERE bp.estado = 'publicado' 
+            ORDER BY bp.fecha_publicacion DESC 
+            LIMIT :limit
+        ");
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch(PDOException $e) {
+        return [];
+    }
+}
+
+// Function to format date in Spanish
+function formatSpanishDate($date) {
+    $months = [
+        1 => 'enero', 2 => 'febrero', 3 => 'marzo', 4 => 'abril',
+        5 => 'mayo', 6 => 'junio', 7 => 'julio', 8 => 'agosto',
+        9 => 'septiembre', 10 => 'octubre', 11 => 'noviembre', 12 => 'diciembre'
+    ];
+    
+    $timestamp = strtotime($date);
+    $day = date('j', $timestamp);
+    $month = $months[(int)date('n', $timestamp)];
+    $year = date('Y', $timestamp);
+    
+    return "$day de $month, $year";
+}
+
+// Function to create slug from title
+function createSlug($title) {
+    $slug = strtolower($title);
+    $slug = preg_replace('/[^a-z0-9\s-]/', '', $slug);
+    $slug = preg_replace('/[\s_]/', '-', $slug);
+    $slug = preg_replace('/-+/', '-', $slug);
+    return trim($slug, '-');
+}
+
+// Function to truncate text
+function truncateText($text, $length = 150) {
+    if (strlen($text) <= $length) {
+        return $text;
+    }
+    return substr($text, 0, $length) . '...';
+}
+
+// Function to determine sport category class
+function getSportCategoryClass($etiquetas) {
+    if (strpos($etiquetas, 'futbol') !== false) return 'posts__cat-label--category-1';
+    if (strpos($etiquetas, 'futsal') !== false) return 'posts__cat-label--category-2';
+    if (strpos($etiquetas, 'baloncesto') !== false) return 'posts__cat-label--category-3';
+    if (strpos($etiquetas, 'voleibol') !== false) return 'posts__cat-label--category-4';
+    return 'posts__cat-label--category-1'; // default
+}
+
+// Function to get multiple sport categories from tags
+function getSportCategories($etiquetas) {
+    $sports = [
+        'futbol' => ['name' => 'Fútbol', 'class' => 'category-1'],
+        'futsal' => ['name' => 'Futsal', 'class' => 'category-2'], 
+        'baloncesto' => ['name' => 'Baloncesto', 'class' => 'category-3'],
+        'voleibol' => ['name' => 'Voleibol', 'class' => 'category-4']
+    ];
+    
+    $tags = array_map('trim', explode(',', $etiquetas));
+    $categories = [];
+    
+    foreach ($tags as $tag) {
+        $tag = strtolower($tag);
+        if (isset($sports[$tag])) {
+            $categories[] = $sports[$tag];
+        }
+    }
+    
+    // If no sport categories found, add a default
+    if (empty($categories)) {
+        $categories[] = ['name' => 'Noticias', 'class' => 'category-1'];
+    }
+    
+    return $categories;
+}
+
+// Function to get tournament standings
+function getTournamentStandings($conn, $tournament_id = null, $limit = 5) {
+    try {
+        if ($tournament_id) {
+            $stmt = $conn->prepare("
+                SELECT t.nombre as tournament_name, t.deporte, et.* 
+                FROM tournaments t 
+                JOIN equipos_tournament et ON t.id_tournament = et.id_tournament 
+                WHERE t.id_tournament = :tournament_id AND t.estado = 'activo'
+                ORDER BY et.posicion ASC 
+                LIMIT :limit
+            ");
+            $stmt->bindParam(':tournament_id', $tournament_id, PDO::PARAM_INT);
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        } else {
+            $stmt = $conn->prepare("
+                SELECT t.nombre as tournament_name, t.deporte, et.* 
+                FROM tournaments t 
+                JOIN equipos_tournament et ON t.id_tournament = et.id_tournament 
+                WHERE t.estado = 'activo'
+                ORDER BY t.id_tournament ASC, et.posicion ASC 
+                LIMIT :limit
+            ");
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        }
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    } catch(PDOException $e) {
+        error_log("getTournamentStandings error: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Function to get active tournaments
+function getActiveTournaments($conn) {
+    try {
+        $stmt = $conn->prepare("
+            SELECT t.*, COUNT(et.id_equipo_tournament) as team_count 
+            FROM tournaments t 
+            LEFT JOIN equipos_tournament et ON t.id_tournament = et.id_tournament 
+            WHERE t.estado = 'activo' 
+            GROUP BY t.id_tournament 
+            ORDER BY team_count DESC, t.fecha_inicio DESC
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch(PDOException $e) {
+        return [];
+    }
+}
+
+// Get latest news
+$latestNews = getLatestNews($conn, 6);
+
+// Get tournament standings (default to first active tournament)
+$active_tournaments = getActiveTournaments($conn);
+$default_tournament_id = !empty($active_tournaments) ? $active_tournaments[0]['id_tournament'] : 1;
+$tournament_standings = getTournamentStandings($conn, $default_tournament_id, 5);
+$current_tournament = !empty($active_tournaments) ? $active_tournaments[0] : null;
+
+// Debug information
+// error_log("Active tournaments count: " . count($active_tournaments));
+// error_log("Tournament standings count: " . count($tournament_standings));
+// error_log("Default tournament ID: " . $default_tournament_id);
+?>
 <!DOCTYPE html>
 <html lang="zxx">
 <head>
@@ -70,7 +229,7 @@
 		<!-- Header Mobile -->
 		<div class="header-mobile clearfix" id="header-mobile">
 			<div class="header-mobile__logo">
-				<a href="_esports_index.html"><img src="assets/images/esports/logo.png" srcset="assets/images/esports/logo@2x.png 2x" alt="Club Deportivo" class="header-mobile__logo-img"></a>
+				<a href="_esports_index.html"><img src="assets/images/esports/logo.png" srcset="assets/images/esports/logo.png 2x" alt="Club Deportivo" class="header-mobile__logo-img" width="100px" height="100px"></a>
 			</div>
 			<div class="header-mobile__inner">
 				<a id="header-mobile__toggle" class="burger-menu-icon"><span class="burger-menu-icon__line"></span></a>
@@ -112,24 +271,24 @@
 			
 						<!-- Account Navigation -->
 						<ul class="nav-account">
-							<li class="nav-account__item nav-account__item--wishlist"><a href="_esports_shop-wishlist.html">Wishlist <span class="highlight">8</span></a></li>
-							<li class="nav-account__item"><a href="#">Currency: <span class="highlight">USD</span></a>
-								<ul class="main-nav__sub">
-									<li><a href="#">USD</a></li>
-									<li><a href="#">EUR</a></li>
-									<li><a href="#">GBP</a></li>
-								</ul>
-							</li>
-							<li class="nav-account__item"><a href="#">Language: <span class="highlight">EN</span></a>
-								<ul class="main-nav__sub">
-									<li><a href="#">English</a></li>
-									<li><a href="#">Spanish</a></li>
-									<li><a href="#">French</a></li>
-									<li><a href="#">German</a></li>
-								</ul>
-							</li>
-							<li class="nav-account__item"><a href="_esports_shop-account.html">Your Account</a></li>
-							<li class="nav-account__item nav-account__item--logout"><a href="_esports_shop-login.html">Logout</a></li>
+							<?php if (isset($_SESSION['user_id'])): ?>
+								<!-- Logged in user navigation -->
+								<li class="nav-account__item">
+									<a href="account.php">
+										<i class="fas fa-user"></i> 
+										Hola, <?php echo htmlspecialchars(explode(' ', $_SESSION['user_name'])[0]); ?>
+									</a>
+								</li>
+								<li class="nav-account__item nav-account__item--logout">
+									<a href="logout.php">
+										<i class="fas fa-sign-out-alt"></i> 
+										Cerrar Sesión
+									</a>
+								</li>
+							<?php else: ?>
+								<!-- Guest navigation -->
+								<li class="nav-account__item"><a href="login.php">Iniciar Sesión</a></li>
+							<?php endif; ?>
 						</ul>
 						<!-- Account Navigation / End -->
 					</div>
@@ -144,7 +303,7 @@
 		
 						<!-- Header Logo -->
 						<div class="header-logo">
-							<a href="_esports_index.html"><img src="assets/images/esports/logo.png" srcset="assets/images/esports/logo@2x.png 2x" alt="Club Deportivo" class="header-logo__img"></a>
+							<a href="_esports_index.html"><img src="assets/images/esports/logo.png" srcset="assets/images/esports/logo.png 2x" alt="Club Deportivo" class="header-logo__img" width="100px" height="100px"></a>
 						</div>
 						<!-- Header Logo / End -->
 		
@@ -217,10 +376,8 @@
 												<li><a href="_esports_features-widgets-sports.html">Widgets - eSports</a></li>
 												<li><a href="_esports_index-2.html">Home V2</a></li>
 												<li><a href="_esports_features-404.html">404 Error</a></li>
-												<li><a href="_esports_features-widgets-shop.html">Widgets - Shop</a></li>
 												<li></li>
 												<li><a href="_esports_features-search-results.html">Search Results</a></li>
-												<li><a href="_esports_shop-login.html">Login/Register</a></li>
 											</ul>
 											<ul class="col-lg-3 col-md-3 col-12 main-nav__ul main-nav__ul-2cols">
 												<li class="main-nav__title">Blog Pages</li>
@@ -279,7 +436,6 @@
 												<li><a href="_esports_team-overview.html">Single Team Page</a></li>
 												<li><a href="_esports_blog-post-1.html">Single Post Page</a></li>
 												<li><a href="_esports_event-overview-3.html">Single Event</a></li>
-												<li><a href="_esports_shop-product.html">Single Product</a></li>
 												<li><a href="_esports_team-gallery-album.html">Single Album</a></li>
 											</ul>
 											<ul class="col-lg-4 col-md-4 col-12 main-nav__ul main-nav__ul-2cols">
@@ -302,19 +458,6 @@
 									</div>
 									<!-- Mega Menu / End -->
 								</li>
-								<li class="">
-									<a href="_esports_shop-fullwidth.html">Tienda</a>
-									<ul class="main-nav__sub">
-										<li class=""><a href="_esports_shop-sidebar.html">Shop - Sidebar</a></li>
-										<li class=""><a href="_esports_shop-fullwidth.html">Shop - Full Width</a></li>
-										<li class=""><a href="_esports_shop-product.html">Single Product</a></li>
-										<li class=""><a href="_esports_shop-cart.html">Cart</a></li>
-										<li class=""><a href="_esports_shop-checkout.html">Checkout</a></li>
-										<li class=""><a href="_esports_shop-wishlist.html">Wishlist</a></li>
-										<li class=""><a href="_esports_shop-login.html">Login</a></li>
-										<li class=""><a href="_esports_shop-account.html">Account</a></li>
-									</ul>
-								</li>
 						
 						
 							</ul>
@@ -332,98 +475,6 @@
 						</div>
 						<!-- Header Search Form / End -->
 		
-						<!-- Header Info Block -->
-						<ul class="info-block info-block--header">
-						
-							<li class="info-block__item info-block__item--shopping-cart js-info-block__item--onclick">
-								<a href="_esports_shop-cart.html" class="info-block__link-wrapper">
-									<svg role="img" class="df-icon df-icon--shopping-cart">
-										<use xlink:href="assets/images/esports/icons-esports.svg#cart"/>
-									</svg>
-									<h6 class="info-block__heading">Your Bag (8 items)</h6>
-									<span class="info-block__cart-sum">$256,30</span>
-								</a>
-							
-								<!-- Dropdown Shopping Cart -->
-								<ul class="header-cart header-cart--inventory">
-							
-									<li class="header-cart__item header-cart__item--title">
-										<h5>Bag Inventory</h5>
-									</li>
-							
-									<li class="header-cart__item">
-										<figure class="header-cart__product-thumb">
-											<a href="_esports_shop-product.html">
-												<img src="assets/images/esports/samples/cart-sm-1.jpg" alt="Jaxxy Framed Art Print">
-											</a>
-										</figure>
-										<div class="header-cart__badges">
-											<span class="badge badge-primary">2</span>
-											<span class="badge badge-default badge-close"><i class="fas fa-times"></i></span>
-										</div>
-									</li>
-									<li class="header-cart__item">
-										<figure class="header-cart__product-thumb">
-											<a href="_esports_shop-product.html">
-												<img src="assets/images/esports/samples/cart-sm-2.jpg" alt="Tech Warrior Framed Art Print">
-											</a>
-										</figure>
-										<div class="header-cart__badges">
-											<span class="badge badge-primary">4</span>
-											<span class="badge badge-default badge-close"><i class="fas fa-times"></i></span>
-										</div>
-									</li>
-									<li class="header-cart__item">
-										<figure class="header-cart__product-thumb">
-											<a href="_esports_shop-product.html">
-												<img src="assets/images/esports/samples/cart-sm-3.jpg" alt="Club Deportivo White Mug">
-											</a>
-										</figure>
-										<div class="header-cart__badges">
-											<span class="badge badge-default badge-close"><i class="fas fa-times"></i></span>
-										</div>
-									</li>
-									<li class="header-cart__item">
-										<figure class="header-cart__product-thumb">
-											<a href="_esports_shop-product.html">
-												<img src="assets/images/esports/samples/cart-sm-4.jpg" alt="Mercenaries Framed Art Print">
-											</a>
-										</figure>
-										<div class="header-cart__badges">
-											<span class="badge badge-default badge-close"><i class="fas fa-times"></i></span>
-										</div>
-									</li>
-							
-									<li class="header-cart__item">
-										<figure class="header-cart__product-thumb"></figure>
-									</li>
-									<li class="header-cart__item">
-										<figure class="header-cart__product-thumb"></figure>
-									</li>
-									<li class="header-cart__item">
-										<figure class="header-cart__product-thumb"></figure>
-									</li>
-									<li class="header-cart__item">
-										<figure class="header-cart__product-thumb"></figure>
-									</li>
-									<li class="header-cart__item">
-										<figure class="header-cart__product-thumb"></figure>
-									</li>
-							
-									<li class="header-cart__item header-cart__item--subtotal">
-										<span class="header-cart__subtotal">Inventory Subtotal</span>
-										<span class="header-cart__subtotal-sum">$256.30</span>
-									</li>
-									<li class="header-cart__item header-cart__item--action">
-										<a href="_esports_shop-cart.html" class="btn btn-primary-inverse btn-block">Go to Shopping Cart</a>
-										<a href="_esports_shop-checkout.html" class="btn btn-primary btn-block">Proceed to Checkout</a>
-									</li>
-								</ul>
-								<!-- Dropdown Shopping Cart / End -->
-							
-							</li>
-						</ul>
-						<!-- Header Info Block / End -->
 		
 					</div>
 				</div>
@@ -466,10 +517,7 @@
 								data-paddingright="[0,0,0,0]"
 								data-paddingbottom="[0,0,0,0]"
 								data-paddingleft="[0,0,0,0]"
-		
 								style="z-index: 5;">
-		
-								<img src="assets/images/esports/hero-slider/hero-jugador-1.png" alt="" data-ww="['457px','385px','323px','261px']" data-hh="['591px','500px','420px','340px']" width="457" height="591" data-no-retina>
 							</div>
 		
 							<!-- LAYER NR. 2 -->
@@ -489,7 +537,7 @@
 								data-frames='[{"delay":500,"speed":1000,"frame":"0","from":"x:-200px;sX:1;sY:1;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":650,"frame":"999","to":"x:-200px;opacity:0;","ease":"Power4.easeIn"}]'
 		
 								style="z-index: 6;">
-									<div class="rs-looped rs-wave" data-speed="2" data-angle="0" data-radius="2px" data-origin="50% 50%">Noticias</div>
+									<div class="rs-looped rs-wave" data-speed="2" data-angle="0" data-radius="2px" data-origin="50% 50%">Deportes</div>
 							</div>
 		
 							<!-- LAYER NR. 3 -->
@@ -509,7 +557,7 @@
 								data-frames='[{"delay":600,"speed":1000,"frame":"0","from":"x:200px;sX:1;sY:1;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":650,"frame":"999","to":"x:200px;opacity:0;","ease":"Power4.easeIn"}]'
 		
 								style="z-index: 7;">
-									<div class="rs-looped rs-wave" data-speed="2" data-angle="0" data-radius="2px" data-origin="50% 50%">Deportivas</div>
+									<div class="rs-looped rs-wave" data-speed="2" data-angle="0" data-radius="2px" data-origin="50% 50%">Abejorral</div>
 							</div>
 		
 							<!-- LAYER NR. 4 -->
@@ -522,7 +570,7 @@
 								data-whitespace="nowrap"
 		
 								data-type="text"
-								data-typewriter='{"lines":"PORTAL DEPORTIVO","enabled":"on","speed":"80","delays":"1%7C100","looped":"on","cursorType":"one","blinking":"on","word_delay":"off","sequenced":"on","hide_cursor":"off","start_delay":"500","newline_delay":"1000","deletion_speed":"30","deletion_delay":"3000","blinking_speed":"500","linebreak_delay":"60","cursor_type":"one","background":"off"}'
+								data-typewriter='{"lines":"INFORMACIÓN ACTUALIZADA","enabled":"on","speed":"80","delays":"1%7C100","looped":"on","cursorType":"one","blinking":"on","word_delay":"off","sequenced":"on","hide_cursor":"off","start_delay":"500","newline_delay":"1000","deletion_speed":"30","deletion_delay":"3000","blinking_speed":"500","linebreak_delay":"60","cursor_type":"one","background":"off"}'
 								data-responsive_offset="on"
 		
 								data-frames='[{"delay":700,"speed":1000,"frame":"0","from":"y:50px;z:0;rX:45deg;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":500,"frame":"999","to":"y:-10px;opacity:0;","ease":"Power3.easeInOut"}]'
@@ -533,7 +581,7 @@
 								data-paddingleft="[0,0,0,0]"
 		
 								style="z-index: 8;">
-								Noticias Destacadas
+								Portal Deportivo Abejorral
 							</div>
 		
 							<!-- LAYER NR. 5 -->
@@ -558,7 +606,7 @@
 								data-paddingleft="[0,0,0,0]"
 		
 								style="z-index: 9;">
-								She has the highest kill ratio of all the season
+								Las noticias más importantes del deporte en Abejorral
 							</div>
 		
 							<!-- LAYER NR. 6 -->
@@ -576,7 +624,7 @@
 		
 								data-frames='[{"delay":1500,"speed":1000,"frame":"0","from":"rX:90deg;sX:1;sY:1;opacity:0;","to":"o:1;tO:50% 0%;","ease":"Power4.easeOut"},{"delay":"wait","speed":500,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"},{"frame":"hover","speed":"200","ease":"Power1.easeInOut","to":"o:1;rX:0;rY:0;rZ:0;z:0;"}]'
 		
-								style="z-index: 10;"><a href="_esports_team-player.html" class="btn btn-primary btn-icon-right">Ver más noticias <i class="fas fa-angle-right"></i></a>
+								style="z-index: 10;"><a href="index.php" class="btn btn-primary btn-icon-right">Ver todas las noticias <i class="fas fa-angle-right"></i></a>
 							</div>
 		
 						</li>
@@ -612,7 +660,6 @@
 		
 								style="z-index: 1;">
 		
-								<img src="assets/images/esports/hero-slider/hero-decor.png" alt="" data-ww="['593px','420px','300px','290px']" data-hh="['431px','480px','420px','340px']" width="593" height="431" data-no-retina>
 							</div>
 		
 							<!-- LAYER NR. 2 -->
@@ -637,7 +684,6 @@
 		
 								style="z-index: 5;">
 		
-								<img src="assets/images/esports/hero-slider/hero-jugador-2.png" alt="" data-ww="['949px','760px','580px','460px']" data-hh="['503px','403px','307px','244px']" width="949" height="503" data-no-retina>
 							</div>
 		
 							<!-- LAYER NR. 3 -->
@@ -657,7 +703,7 @@
 								data-frames='[{"delay":500,"speed":1000,"frame":"0","from":"x:-200px;sX:1;sY:1;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":650,"frame":"999","to":"x:-200px;opacity:0;","ease":"Power4.easeIn"}]'
 		
 								style="z-index: 6;">
-									<div class="rs-looped rs-wave" data-speed="2" data-angle="0" data-radius="2px" data-origin="50% 50%">Club Deportivo</div>
+									<div class="rs-looped rs-wave" data-speed="2" data-angle="0" data-radius="2px" data-origin="50% 50%">Eventos</div>
 							</div>
 		
 							<!-- LAYER NR. 4 -->
@@ -677,7 +723,7 @@
 								data-frames='[{"delay":600,"speed":1000,"frame":"0","from":"x:200px;sX:1;sY:1;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":650,"frame":"999","to":"x:200px;opacity:0;","ease":"Power4.easeIn"}]'
 		
 								style="z-index: 7;">
-									<div class="rs-looped rs-wave" data-speed="2" data-angle="0" data-radius="2px" data-origin="50% 50%">FortDaite</div>
+									<div class="rs-looped rs-wave" data-speed="2" data-angle="0" data-radius="2px" data-origin="50% 50%">Deportivos</div>
 							</div>
 		
 							<!-- LAYER NR. 5 -->
@@ -690,7 +736,7 @@
 								data-whitespace="nowrap"
 		
 								data-type="text"
-								data-typewriter='{"lines":"A NEW ERA BEGINS!","enabled":"on","speed":"80","delays":"1%7C100","looped":"on","cursorType":"one","blinking":"on","word_delay":"off","sequenced":"on","hide_cursor":"off","start_delay":"500","newline_delay":"1000","deletion_speed":"30","deletion_delay":"3000","blinking_speed":"500","linebreak_delay":"60","cursor_type":"one","background":"off"}'
+								data-typewriter='{"lines":"DEPORTES LOCALES","enabled":"on","speed":"80","delays":"1%7C100","looped":"on","cursorType":"one","blinking":"on","word_delay":"off","sequenced":"on","hide_cursor":"off","start_delay":"500","newline_delay":"1000","deletion_speed":"30","deletion_delay":"3000","blinking_speed":"500","linebreak_delay":"60","cursor_type":"one","background":"off"}'
 								data-responsive_offset="on"
 		
 								data-frames='[{"delay":700,"speed":1000,"frame":"0","from":"y:50px;z:0;rX:45deg;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":500,"frame":"999","to":"y:-10px;opacity:0;","ease":"Power3.easeInOut"}]'
@@ -701,7 +747,7 @@
 								data-paddingleft="[0,0,0,0]"
 		
 								style="z-index: 8;">
-								A new team approaches!
+								Cobertura completa de eventos
 							</div>
 		
 							<!-- LAYER NR. 6 -->
@@ -726,7 +772,7 @@
 								data-paddingleft="[0,0,0,0]"
 		
 								style="z-index: 9;">
-								We welcome the new Fortdaite team roster to the <br> Club Deportivo family!
+								Mantente informado sobre torneos, competencias <br> y actividades deportivas de tu municipio
 							</div>
 		
 							<!-- LAYER NR. 7 -->
@@ -744,180 +790,11 @@
 		
 								data-frames='[{"delay":1500,"speed":1000,"frame":"0","from":"rX:90deg;sX:1;sY:1;opacity:0;","to":"o:1;tO:50% 0%;","ease":"Power4.easeOut"},{"delay":"wait","speed":500,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"},{"frame":"hover","speed":"200","ease":"Power1.easeInOut","to":"o:1;rX:0;rY:0;rZ:0;z:0;"}]'
 		
-								style="z-index: 10;"><a href="_esports_team-overview.html" class="btn btn-primary-inverse btn-icon-right">Get to know the team <i class="fas fa-angle-right"></i></a>
+								style="z-index: 10;"><a href="index.php" class="btn btn-primary-inverse btn-icon-right">Explorar eventos <i class="fas fa-angle-right"></i></a>
 							</div>
 		
 						</li>
 						<!-- Slide #2 / End -->
-		
-						<!-- Slide #3 -->
-						<li data-transition="fade" data-slotamount="default" data-hideafterloop="0" data-hideslideonmobile="off"  data-easein="default" data-easeout="default" data-masterspeed="300" data-rotate="0" data-saveperformance="off" data-title="Slide">
-		
-							<!-- MAIN IMAGE -->
-							<img src="assets/images/esports/hero-slider/hero-bg-3.jpg" data-bgcolor='#1d1429' alt="" data-bgposition="center center" data-bgfit="cover" data-bgrepeat="no-repeat" data-bgparallax="off" class="rev-slidebg" data-no-retina>
-							<!-- LAYERS -->
-		
-							<!-- LAYER NR. 1 -->
-							<div class="tp-caption alc-hero-slider__label tp-resizeme rs-parallaxlevel-11"
-								id="slide3-layer1"
-								data-x="['left','left','left','left']" data-hoffset="['128','80','40','20']"
-								data-y="['top','top','top','top']" data-voffset="['120','130','100','78']"
-								data-width="none"
-								data-height="none"
-								data-whitespace="nowrap"
-		
-								data-type="button"
-								data-basealign="slide"
-								data-responsive_offset="on"
-		
-								data-frames='[{"delay":300,"speed":1000,"frame":"0","from":"y:-50px;sX:1;sY:1;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":650,"frame":"999","to":"x:-200px;opacity:0;","ease":"Power4.easeIn"}]'
-		
-								style="z-index: 10;">
-									<span class="label posts__cat-label posts__cat-label--category-1">The Team</span>
-							</div>
-		
-							<!-- LAYER NR. 2 -->
-							<div class="tp-caption alc-hero-slider__label tp-resizeme rs-parallaxlevel-11"
-								id="slide3-layer2"
-								data-x="['left','left','left','left']" data-hoffset="['194','146','110','82']"
-								data-y="['top','top','top','top']" data-voffset="['120','130','100','78']"
-								data-width="none"
-								data-height="none"
-								data-whitespace="nowrap"
-		
-								data-type="button"
-								data-basealign="slide"
-								data-responsive_offset="on"
-		
-								data-frames='[{"delay":400,"speed":1000,"frame":"0","from":"y:-50px;sX:1;sY:1;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":650,"frame":"999","to":"x:-200px;opacity:0;","ease":"Power4.easeIn"}]'
-		
-								style="z-index: 10;">
-									<span class="label posts__cat-label posts__cat-label--category-2">Liga Profesional</span>
-							</div>
-		
-							<!-- LAYER NR. 3 -->
-							<div class="tp-caption tp-resizeme alc-hero-slider__h alc-hero-slider__h--h2 rs-parallaxlevel-10"
-								id="slide3-layer3"
-								data-x="['left','left','left','left']" data-hoffset="['128','80','40','20']"
-								data-y="['top','top','top','top']" data-voffset="['160','160','130','105']"
-								data-fontsize="['58','46','34','24']"
-								data-lineheight="['58','46','34','24']"
-								data-width="none"
-								data-height="none"
-								data-whitespace="nowrap"
-		
-								data-type="text"
-								data-responsive_offset="on"
-		
-								data-frames='[{"delay":500,"speed":1000,"frame":"0","from":"x:-200px;sX:1;sY:1;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":650,"frame":"999","to":"x:-200px;opacity:0;","ease":"Power4.easeIn"}]'
-		
-								style="z-index: 6;">
-									The Liga de Campeones
-							</div>
-		
-							<!-- LAYER NR. 4 -->
-							<div class="tp-caption tp-resizeme alc-hero-slider__h alc-hero-slider__h--h2 rs-parallaxlevel-10"
-								id="slide3-layer4"
-								data-x="['left','left','left','left']" data-hoffset="['128','80','40','20']"
-								data-y="['top','top','top','top']" data-voffset="['210','200','157','125']"
-								data-fontsize="['58','46','34','24']"
-								data-lineheight="['58','46','34','24']"
-								data-width="none"
-								data-height="none"
-								data-whitespace="nowrap"
-		
-								data-type="text"
-								data-responsive_offset="on"
-		
-								data-frames='[{"delay":600,"speed":1000,"frame":"0","from":"x:-200px;sX:1;sY:1;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":650,"frame":"999","to":"x:-200px;opacity:0;","ease":"Power4.easeIn"}]'
-		
-								style="z-index: 6;">
-									team destroyed the
-							</div>
-		
-							<!-- LAYER NR. 5 -->
-							<div class="tp-caption tp-resizeme alc-hero-slider__h alc-hero-slider__h--h2 rs-parallaxlevel-10"
-								id="slide3-layer5"
-								data-x="['left','left','left','left']" data-hoffset="['128','80','40','20']"
-								data-y="['top','top','top','top']" data-voffset="['262','238','185','145']"
-								data-fontsize="['58','46','34','24']"
-								data-lineheight="['58','46','34','24']"
-								data-width="none"
-								data-height="none"
-								data-whitespace="nowrap"
-		
-								data-type="text"
-								data-responsive_offset="on"
-		
-								data-frames='[{"delay":700,"speed":1000,"frame":"0","from":"x:-200px;sX:1;sY:1;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":650,"frame":"999","to":"x:-200px;opacity:0;","ease":"Power4.easeIn"}]'
-		
-								style="z-index: 6;">
-									Clovers 7-0
-							</div>
-		
-							<!-- LAYER NR. 6 -->
-							<div class="tp-caption tp-resizeme alc-hero-slider__author-avatar rs-parallaxlevel-11"
-								id="slide1-layer6"
-								data-x="['left','left','left','left']" data-hoffset="['125','80','40','20']"
-								data-y="['top','top','top','top']" data-voffset="['341','300','230','180']"
-								data-width="none"
-								data-height="none"
-								data-whitespace="nowrap"
-		
-								data-type="image"
-								data-basealign="slide"
-								data-responsive_offset="on"
-		
-								data-frames='[{"delay":600,"speed":1000,"frame":"0","from":"y:50px;z:0;rX:45deg;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":500,"frame":"999","to":"y:-10px;opacity:0;","ease":"Power3.easeInOut"}]'
-								data-textAlign="['inherit','inherit','inherit','inherit']"
-								data-paddingtop="[0,0,0,0]"
-								data-paddingright="[0,0,0,0]"
-								data-paddingbottom="[0,0,0,0]"
-								data-paddingleft="[0,0,0,0]"
-		
-								style="z-index: 5;">
-		
-								<img src="assets/images/samples/avatar-12-xs.jpg" alt="" class="rounded-circle" data-ww="['24px','24px','18px','15px']" data-hh="['24px','24px','18px','15px']" width="24" height="24" data-no-retina>
-							</div>
-		
-							<!-- LAYER NR. 7 -->
-							<div class="tp-caption tp-resizeme alc-hero-slider__h alc-hero-slider__h--h6 rs-parallaxlevel-11"
-								id="slide3-layer7"
-								data-x="['left','left','left','left']" data-hoffset="['157','110','65','43']"
-								data-y="['top','top','top','top']" data-voffset="['345','303','232','181']"
-								data-width="none"
-								data-height="none"
-								data-whitespace="nowrap"
-		
-								data-type="text"
-		
-								data-frames='[{"delay":700,"speed":1000,"frame":"0","from":"y:50px;z:0;rX:45deg;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":500,"frame":"999","to":"y:-10px;opacity:0;","ease":"Power3.easeInOut"}]'
-		
-								style="z-index: 8;">
-								by Eric Rodgers - August 27th, 2018
-							</div>
-		
-							<!-- LAYER NR. 8 -->
-							<div class="tp-caption tp-resizeme rs-parallaxlevel-10"
-								id="slide3-layer8"
-								data-x="['left','left','left','left']" data-hoffset="['125','80','40','20']"
-								data-y="['bottom','bottom','bottom','bottom']" data-voffset="['163','160','135','120']"
-								data-width="none"
-								data-height="none"
-								data-whitespace="nowrap"
-		
-								data-type="button"
-								data-basealign="slide"
-								data-responsive_offset="on"
-		
-								data-frames='[{"delay":1500,"speed":1000,"frame":"0","from":"rX:90deg;sX:1;sY:1;opacity:0;","to":"o:1;tO:50% 0%;","ease":"Power4.easeOut"},{"delay":"wait","speed":500,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"},{"frame":"hover","speed":"200","ease":"Power1.easeInOut","to":"o:1;rX:0;rY:0;rZ:0;z:0;"}]'
-		
-								style="z-index: 10;">
-								<a href="_esports_blog-post-3.html" class="btn btn-primary-inverse btn-icon-right">Read full story <i class="fas fa-angle-right"></i></a>
-							</div>
-		
-						</li>
-						<!-- Slide #3 / End -->
 		
 					</ul>
 				</div>
@@ -939,218 +816,98 @@
 						<!-- Posts Grid -->
 						<div class="posts posts--cards post-grid post-grid--2cols row">
 		
-							<div class="post-grid__item col-sm-6">
-								<div class="posts__item posts__item--card posts__item--category-1 posts__item--category-4  card">
-									<figure class="posts__thumb">
-										<div class="posts__cat">
-											<span class="label posts__cat-label posts__cat-label--category-1">The Team</span><span class="label posts__cat-label posts__cat-label--category-4">Fútbol Premier</span>
-										</div>
-										<a href="_esports_blog-post-1.html"><img src="assets/images/esports/samples/post-img1.jpg" alt=""></a>
-									</figure>
-									<div class="posts__inner card__content">
-										<a href="_esports_blog-post-1.html" class="posts__cta"></a>
-										<time datetime="2018-08-23" class="posts__date">August 27th, 2018</time>
-										<h6 class="posts__title posts__title--color-hover"><a href="_esports_blog-post-1.html">El equipo local avanza a las finales del campeonato</a></h6>
-										<div class="posts__excerpt">
-											Lorem ipsum dolor sit amet, consectetur adipisi nela elit, sed do eiusmod tempore der incididunt.
-										</div>
-									</div>
-									<footer class="posts__footer card__footer">
-										<div class="post-author">
-											<figure class="post-author__avatar">
-												<img src="assets/images/samples/avatar-12-xs.jpg" alt="Post Author Avatar">
-											</figure>
-											<div class="post-author__info">
-												<h4 class="post-author__name">Carlos Martínez</h4>
-											</div>
-										</div>
-										<ul class="post__meta meta">
-											<li class="meta__item meta__item--views">2369</li>
-											<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> 530</a></li>
-											<li class="meta__item meta__item--comments"><a href="#">18</a></li>
-										</ul>
-									</footer>
-								</div>
-							</div>
-							<div class="post-grid__item col-sm-6">
-								<div class="posts__item posts__item--card posts__item--category-2  card">
-									<figure class="posts__thumb">
-										<div class="posts__cat">
-											<span class="label posts__cat-label posts__cat-label--category-2">Liga Profesional</span>
-										</div>
-										<a href="_esports_blog-post-1.html"><img src="assets/images/esports/samples/post-img2.jpg" alt=""></a>
-									</figure>
-									<div class="posts__inner card__content">
-										<a href="_esports_blog-post-1.html" class="posts__cta"></a>
-										<time datetime="2018-08-23" class="posts__date">August 23rd, 2018</time>
-										<h6 class="posts__title posts__title--color-hover"><a href="_esports_blog-post-1.html">A new mage jugador is coming to the league</a></h6>
-										<div class="posts__excerpt">
-											Lorem ipsum dolor sit amet, consectetur adipisi nela elit, sed do eiusmod tempore der incididunt.
-										</div>
-									</div>
-									<footer class="posts__footer card__footer">
-										<div class="post-author">
-											<figure class="post-author__avatar">
-												<img src="assets/images/samples/avatar-6-xs.jpg" alt="Post Author Avatar">
-											</figure>
-											<div class="post-author__info">
-												<h4 class="post-author__name">Lagertha Dax</h4>
-											</div>
-										</div>
-										<ul class="post__meta meta">
-											<li class="meta__item meta__item--views">2369</li>
-											<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> 530</a></li>
-											<li class="meta__item meta__item--comments"><a href="#">18</a></li>
-										</ul>
-									</footer>
-								</div>
-							</div>
-							<div class="post-grid__item col-sm-6">
-								<div class="posts__item posts__item--card posts__item--category-1 posts__item--category-3  card">
-									<figure class="posts__thumb">
-										<div class="posts__cat">
-											<span class="label posts__cat-label posts__cat-label--category-1">The Team</span><span class="label posts__cat-label posts__cat-label--category-3">Fútbol Liga</span>
-										</div>
-										<a href="_esports_blog-post-1.html"><img src="assets/images/esports/samples/post-img3.jpg" alt=""></a>
-									</figure>
-									<div class="posts__inner card__content">
-										<a href="_esports_blog-post-1.html" class="posts__cta"></a>
-										<time datetime="2018-08-23" class="posts__date">July 28th, 2018</time>
-										<h6 class="posts__title posts__title--color-hover"><a href="_esports_blog-post-1.html">El Valencia vence al Sevilla 3-1 en cuartos de final</a></h6>
-										<div class="posts__excerpt">
-											Lorem ipsum dolor sit amet, consectetur adipisi
-										</div>
-									</div>
-									<footer class="posts__footer card__footer">
-										<div class="post-author">
-											<figure class="post-author__avatar">
-												<img src="assets/images/samples/avatar-6-xs.jpg" alt="Post Author Avatar">
-											</figure>
-											<div class="post-author__info">
-												<h4 class="post-author__name">Lagertha Dax</h4>
-											</div>
-										</div>
-										<ul class="post__meta meta">
-											<li class="meta__item meta__item--views">2369</li>
-											<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> 530</a></li>
-											<li class="meta__item meta__item--comments"><a href="#">18</a></li>
-										</ul>
-									</footer>
-								</div>
-							</div>
-							<div class="post-grid__item col-sm-6">
-								<div class="posts__item posts__item--card posts__item--category-4  card">
-									<figure class="posts__thumb">
-										<div class="posts__cat">
-											<span class="label posts__cat-label posts__cat-label--category-4">Fútbol Premier</span>
-										</div>
-										<a href="_esports_blog-post-1.html"><img src="assets/images/esports/samples/post-img4.jpg" alt=""></a>
-									</figure>
-									<div class="posts__inner card__content">
-										<a href="_esports_blog-post-1.html" class="posts__cta"></a>
-										<time datetime="2018-08-23" class="posts__date">July 24th, 2018</time>
-										<h6 class="posts__title posts__title--color-hover"><a href="_esports_blog-post-1.html">El Real Madrid se prepara para el clásico del fin de semana</a></h6>
-										<div class="posts__excerpt">
-											Lorem ipsum dolor sit amet, consectetur adipisi nela elit, sed do eiusmod tempore der incididunt.
-										</div>
-									</div>
-									<footer class="posts__footer card__footer">
-										<div class="post-author">
-											<figure class="post-author__avatar">
-												<img src="assets/images/samples/avatar-6-xs.jpg" alt="Post Author Avatar">
-											</figure>
-											<div class="post-author__info">
-												<h4 class="post-author__name">Lagertha Dax</h4>
-											</div>
-										</div>
-										<ul class="post__meta meta">
-											<li class="meta__item meta__item--views">2369</li>
-											<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> 530</a></li>
-											<li class="meta__item meta__item--comments"><a href="#">18</a></li>
-										</ul>
-									</footer>
-								</div>
-							</div>
-							<div class="post-grid__item col-sm-6">
-								<div class="posts__item posts__item--card posts__item--category-1  card">
-									<figure class="posts__thumb">
-										<div class="posts__cat">
-											<span class="label posts__cat-label posts__cat-label--category-1">The Team</span>
-										</div>
-										<a href="_esports_blog-post-1.html"><img src="assets/images/esports/samples/post-img6.jpg" alt=""></a>
-									</figure>
-									<div class="posts__inner card__content">
-										<a href="_esports_blog-post-1.html" class="posts__cta"></a>
-										<time datetime="2018-08-23" class="posts__date">June 3rd, 2018</time>
-										<h6 class="posts__title posts__title--color-hover"><a href="_esports_blog-post-1.html">El Atlético de Madrid ficha a una nueva estrella</a></h6>
-										<div class="posts__excerpt">
-											Lorem ipsum dolor sit amet, consectetur adipisi nela elit, sed do eiusmod tempore der incididunt.
-										</div>
-									</div>
-									<footer class="posts__footer card__footer">
-										<div class="post-author">
-											<figure class="post-author__avatar">
-												<img src="assets/images/samples/avatar-12-xs.jpg" alt="Post Author Avatar">
-											</figure>
-											<div class="post-author__info">
-												<h4 class="post-author__name">Eric Rodgers</h4>
-											</div>
-										</div>
-										<ul class="post__meta meta">
-											<li class="meta__item meta__item--views">2369</li>
-											<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> 530</a></li>
-											<li class="meta__item meta__item--comments"><a href="#">18</a></li>
-										</ul>
-									</footer>
-								</div>
-							</div>
-		
-							<div class="post-grid__item col-sm-6">
-								<div class="posts posts--tile posts--tile-alt posts--tile-meta-position posts--tile-thumb-bordered">
-		
-									<div class="post-grid__item">
-										<div class="posts__item posts__item--tile posts__item--category-3  card">
+							<?php if (!empty($latestNews)): ?>
+								<?php foreach ($latestNews as $index => $post): ?>
+									<?php if ($index >= 6) break; // Limit to 6 posts ?>
+									<?php 
+										$postSlug = !empty($post['slug']) ? $post['slug'] : createSlug($post['titulo']);
+										$defaultImages = [
+											'assets/images/esports/samples/post-img1.jpg',
+											'assets/images/esports/samples/post-img2.jpg',
+											'assets/images/esports/samples/post-img3.jpg',
+											'assets/images/esports/samples/post-img4.jpg',
+											'assets/images/esports/samples/post-img6.jpg',
+											'assets/images/esports/samples/post-img7.jpg'
+										];
+										$imageUrl = !empty($post['imagen']) ? '../' . $post['imagen'] : $defaultImages[$index % count($defaultImages)];
+										$formattedDate = formatSpanishDate($post['fecha_publicacion']);
+										$excerpt = truncateText(strip_tags($post['contenido']), 120);
+										
+										// Get sport categories for this post
+										$categories = getSportCategories($post['etiquetas']);
+									?>
+									<div class="post-grid__item col-sm-6">
+										<div class="posts__item posts__item--card posts__item--<?php echo $categories[0]['class']; ?> card">
 											<figure class="posts__thumb">
-												<img src="assets/images/esports/samples/post-img11-card-md.jpg" alt="">
-												<div class="posts__inner">
-													<div class="posts__cat">
-														<span class="label posts__cat-label posts__cat-label--category-3">Fútbol Liga</span>
-													</div>
-													<h6 class="posts__title posts__title--lg posts__title--color-hover"><a href="_esports_blog-post-1.html">Nuevo trofeo será entregado al campeón de liga</a></h6>
-													<time datetime="2018-08-23" class="posts__date">March 17th, 2018</time>
-													<ul class="post__meta meta">
-														<li class="meta__item meta__item--views">2369</li>
-														<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> 530</a></li>
-														<li class="meta__item meta__item--comments"><a href="#">18</a></li>
-													</ul>
+												<div class="posts__cat">
+													<?php foreach ($categories as $category): ?>
+														<span class="label posts__cat-label posts__cat-label--<?php echo $category['class']; ?>"><?php echo htmlspecialchars($category['name']); ?></span>
+													<?php endforeach; ?>
 												</div>
+												<a href="post.php?slug=<?php echo urlencode($postSlug); ?>"><img src="<?php echo htmlspecialchars($imageUrl); ?>" alt="<?php echo htmlspecialchars($post['titulo']); ?>"></a>
 											</figure>
-											<a href="_esports_blog-post-1.html" class="posts__cta"></a>
+											<div class="posts__inner card__content">
+												<a href="post.php?slug=<?php echo urlencode($postSlug); ?>" class="posts__cta"></a>
+												<time datetime="<?php echo date('Y-m-d', strtotime($post['fecha_publicacion'])); ?>" class="posts__date"><?php echo $formattedDate; ?></time>
+												<h6 class="posts__title posts__title--color-hover"><a href="post.php?slug=<?php echo urlencode($postSlug); ?>"><?php echo htmlspecialchars($post['titulo']); ?></a></h6>
+												<div class="posts__excerpt">
+													<?php echo htmlspecialchars($excerpt); ?>
+												</div>
+											</div>
+											<footer class="posts__footer card__footer">
+												<div class="post-author">
+													<figure class="post-author__avatar">
+														<img src="assets/images/samples/avatar-<?php echo (($index % 2) == 0) ? '12' : '6'; ?>-xs.jpg" alt="Post Author Avatar">
+													</figure>
+													<div class="post-author__info">
+														<h4 class="post-author__name"><?php echo htmlspecialchars($post['nombre'] . ' ' . $post['apellido']); ?></h4>
+													</div>
+												</div>
+												<ul class="post__meta meta">
+													<li class="meta__item meta__item--views"><?php echo rand(500, 3000); ?></li>
+													<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> <?php echo rand(50, 500); ?></a></li>
+													<li class="meta__item meta__item--comments"><a href="#"><?php echo rand(5, 25); ?></a></li>
+												</ul>
+											</footer>
 										</div>
 									</div>
-									<div class="post-grid__item">
-										<div class="posts__item posts__item--tile posts__item--category-2  card">
-											<figure class="posts__thumb">
-												<img src="assets/images/esports/samples/post-img5-card-md.jpg" alt="">
-												<div class="posts__inner">
-													<div class="posts__cat">
-														<span class="label posts__cat-label posts__cat-label--category-2">Liga Profesional</span>
-													</div>
-													<h6 class="posts__title  posts__title--color-hover"><a href="_esports_blog-post-1.html">Nueva categoría juvenil se añade al torneo nacional</a></h6>
-													<time datetime="2018-08-23" class="posts__date">April 1st, 2018</time>
-													<ul class="post__meta meta">
-														<li class="meta__item meta__item--views">2369</li>
-														<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> 530</a></li>
-														<li class="meta__item meta__item--comments"><a href="#">18</a></li>
-													</ul>
-												</div>
-											</figure>
-											<a href="_esports_blog-post-1.html" class="posts__cta"></a>
+								<?php endforeach; ?>
+							<?php else: ?>
+								<!-- Fallback static content -->
+								<div class="post-grid__item col-sm-6">
+									<div class="posts__item posts__item--card posts__item--category-1 card">
+										<figure class="posts__thumb">
+											<div class="posts__cat">
+												<span class="label posts__cat-label posts__cat-label--category-1">Noticias</span>
+											</div>
+											<a href="#"><img src="assets/images/esports/samples/post-img1.jpg" alt=""></a>
+										</figure>
+										<div class="posts__inner card__content">
+											<a href="#" class="posts__cta"></a>
+											<time datetime="2025-01-26" class="posts__date">26 de enero, 2025</time>
+											<h6 class="posts__title posts__title--color-hover"><a href="#">No hay noticias disponibles</a></h6>
+											<div class="posts__excerpt">
+												Pronto habrá más contenido disponible en nuestro portal de noticias deportivas.
+											</div>
 										</div>
+										<footer class="posts__footer card__footer">
+											<div class="post-author">
+												<figure class="post-author__avatar">
+													<img src="assets/images/samples/avatar-12-xs.jpg" alt="Post Author Avatar">
+												</figure>
+												<div class="post-author__info">
+													<h4 class="post-author__name">Editor</h4>
+												</div>
+											</div>
+											<ul class="post__meta meta">
+												<li class="meta__item meta__item--views">0</li>
+												<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> 0</a></li>
+												<li class="meta__item meta__item--comments"><a href="#">0</a></li>
+											</ul>
+										</footer>
 									</div>
-		
 								</div>
-							</div>
+							<?php endif; ?>
 		
 						</div>
 						<!-- Post Grid / End -->
@@ -1321,111 +1078,47 @@
 						<!-- Widget: Standings -->
 						<aside class="widget card widget--sidebar widget-standings">
 							<div class="widget__title card__header card__header--has-btn">
-								<h4>Liga Profesional Standings</h4>
-								<a href="#" class="btn btn-default btn-xs card-header__button">See All Stats</a>
+								<h4><?php echo $current_tournament ? htmlspecialchars($current_tournament['nombre']) : 'Tabla de Posiciones'; ?></h4>
+								<a href="#" class="btn btn-default btn-xs card-header__button">Ver Todas</a>
 							</div>
 							<div class="widget__content card__content">
 								<div class="table-responsive">
 									<table class="table table-hover table-standings">
 										<thead>
 											<tr>
-												<th>Team Positions</th>
-												<th>Overall Record</th>
-												<th>Match Record</th>
+												<th>Posición del Equipo</th>
+												<th>Partidos</th>
+												<th>Puntos</th>
 											</tr>
 										</thead>
 										<tbody>
 						
-											<tr class="">
-												<td>
-													<div class="team-meta">
-														<figure class="team-meta__logo">
-															<img src="assets/images/samples/logos/pirates_shield.png" alt="L.A. Sporting">
-														</figure>
-														<div class="team-meta__info">
-															<h6 class="team-meta__name">L.A. Sporting</h6>
-															<span class="team-meta__place">United States</span>
+											<?php if (!empty($tournament_standings)): ?>
+												<?php foreach ($tournament_standings as $team): ?>
+												<tr class="<?php echo $team['destacado'] ? 'highlighted' : ''; ?>">
+													<td>
+														<div class="team-meta">
+															<?php if (!empty($team['logo'])): ?>
+															<figure class="team-meta__logo">
+																<img src="<?php echo htmlspecialchars($team['logo']); ?>" 
+																	 alt="<?php echo htmlspecialchars($team['nombre_equipo']); ?>">
+															</figure>
+															<?php endif; ?>
+															<div class="team-meta__info">
+																<h6 class="team-meta__name"><?php echo htmlspecialchars($team['nombre_equipo']); ?></h6>
+																<span class="team-meta__place"><?php echo htmlspecialchars($team['ciudad'] . ', ' . $team['pais']); ?></span>
+															</div>
 														</div>
-													</div>
-												</td>
-												<td>14 - 2</td>
-												<td>28 - 14</td>
-											</tr>
-											<tr class="">
-												<td>
-													<div class="team-meta">
-														<figure class="team-meta__logo">
-															<img src="assets/images/samples/logos/sharks_shield.png" alt="Sharks">
-														</figure>
-														<div class="team-meta__info">
-															<h6 class="team-meta__name">Sharks</h6>
-															<span class="team-meta__place">South Korea</span>
-														</div>
-													</div>
-												</td>
-												<td>12 - 4</td>
-												<td>27 - 13</td>
-											</tr>
-											<tr class="highlighted">
-												<td>
-													<div class="team-meta">
-														<figure class="team-meta__logo">
-															<img src="assets/images/esports/logos/alchemists-22x25.png" alt="The Club Deportivo">
-														</figure>
-														<div class="team-meta__info">
-															<h6 class="team-meta__name">The Club Deportivo</h6>
-															<span class="team-meta__place">United States</span>
-														</div>
-													</div>
-												</td>
-												<td>11 - 5</td>
-												<td>26 - 11</td>
-											</tr>
-											<tr class="">
-												<td>
-													<div class="team-meta">
-														<figure class="team-meta__logo">
-															<img src="assets/images/samples/logos/ocean_kings_shield.png" alt="Ocean Kings">
-														</figure>
-														<div class="team-meta__info">
-															<h6 class="team-meta__name">Ocean Kings</h6>
-															<span class="team-meta__place">Japan</span>
-														</div>
-													</div>
-												</td>
-												<td>9 - 7</td>
-												<td>20 - 19</td>
-											</tr>
-											<tr class="">
-												<td>
-													<div class="team-meta">
-														<figure class="team-meta__logo">
-															<img src="assets/images/samples/logos/red_wings_shield.png" alt="Red Wings">
-														</figure>
-														<div class="team-meta__info">
-															<h6 class="team-meta__name">Red Wings</h6>
-															<span class="team-meta__place">Canada</span>
-														</div>
-													</div>
-												</td>
-												<td>8 - 8</td>
-												<td>20 - 20</td>
-											</tr>
-											<tr class="">
-												<td>
-													<div class="team-meta">
-														<figure class="team-meta__logo">
-															<img src="assets/images/samples/logos/lucky_clovers_shield.png" alt="Lucky Clovers">
-														</figure>
-														<div class="team-meta__info">
-															<h6 class="team-meta__name">Lucky Clovers</h6>
-															<span class="team-meta__place">Ireland</span>
-														</div>
-													</div>
-												</td>
-												<td>7 - 9</td>
-												<td>19 - 21</td>
-											</tr>
+													</td>
+													<td><?php echo $team['partidos_ganados']; ?> - <?php echo $team['partidos_perdidos']; ?></td>
+													<td><?php echo $team['puntos_favor']; ?> - <?php echo $team['puntos_contra']; ?></td>
+												</tr>
+												<?php endforeach; ?>
+											<?php else: ?>
+												<tr>
+													<td colspan="3" class="text-center">No hay datos de torneos disponibles</td>
+												</tr>
+											<?php endif; ?>
 						
 										</tbody>
 									</table>
@@ -2134,7 +1827,6 @@
 																<li><a href="_esports_event-overview-1a.html">Live Stream</a>
 																<li><a href="_esports_team-gallery.html">Gallery</a>
 																<li><a href="_esports_team-videos.html">Videos</a>
-																<li><a href="_esports_shop-fullwidth.html">Merchandise</a>
 																<li><a href="_esports_features-shortcodes.html">Shortcodes</a>
 															</ul>
 														</div>
@@ -2175,7 +1867,6 @@
 														<li><a href="_esports_page-sponsors.html">Sponsors</a></li>
 														<li><a href="_esports_team-schedule.html">Next Events</a></li>
 														<li><a href="_esports_blog-post-3.html">Guides</a></li>
-														<li><a href="_esports_shop-login.html">Register/Login</a></li>
 														<li><a href="#">Privacy Policy</a></li>
 													</ul>
 												</div>

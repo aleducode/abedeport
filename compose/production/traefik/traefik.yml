@@ -1,0 +1,97 @@
+log:
+  level: INFO
+
+entryPoints:
+  web:
+    address: ':80'
+    http:
+      redirections:
+        entrypoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: ':443'
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: admin@abedeport.abejorralmuchopueblo.com
+      storage: /etc/traefik/acme/acme.json
+      httpChallenge:
+        entryPoint: web
+
+http:
+  routers:
+    # Health check router
+    health-router:
+      rule: "Path(`/health/`)"
+      entryPoints:
+        - websecure
+      service: abedeport-app
+      priority: 2
+      tls:
+        certResolver: letsencrypt
+
+    # Main application router
+    web-router:
+      rule: "Host(`abedeport.abejorralmuchopueblo.com`)"
+      entryPoints:
+        - websecure
+      middlewares:
+        - security-headers
+      service: abedeport-app
+      priority: 1
+      tls:
+        certResolver: letsencrypt
+
+    # phpMyAdmin router
+    phpmyadmin-router:
+      rule: "Host(`pma.abedeport.abejorralmuchopueblo.com`)"
+      entryPoints:
+        - websecure
+      middlewares:
+        - security-headers
+        - basic-auth
+      service: phpmyadmin
+      priority: 1
+      tls:
+        certResolver: letsencrypt
+
+  middlewares:
+    security-headers:
+      headers:
+        frameDeny: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+        customResponseHeaders:
+          X-Robots-Tag: "noindex,nofollow,nosnippet,noarchive"
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+
+    basic-auth:
+      basicAuth:
+        users:
+          - "admin:$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi"  # admin:admin
+
+  services:
+    abedeport-app:
+      loadBalancer:
+        servers:
+          - url: http://app:80
+
+    phpmyadmin:
+      loadBalancer:
+        servers:
+          - url: http://phpmyadmin:80
+
+providers:
+  file:
+    filename: /etc/traefik/traefik.yml
+    watch: true
