@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # PHP Application
   app:
@@ -12,7 +10,6 @@ services:
       - ./admin:/var/www/html/admin
       - ./assets:/var/www/html/assets
       - ./noticias:/var/www/html/noticias
-      - ./index.html:/var/www/html/index.html
     depends_on:
       - db
     environment:
