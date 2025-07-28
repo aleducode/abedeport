@@ -28,6 +28,10 @@ WORKDIR /var/www/html
 # Copy application files
 COPY . /var/www/html/
 
+# Copy and make entrypoint script executable
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
