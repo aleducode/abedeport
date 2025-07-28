@@ -22,7 +22,6 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 # Enable Apache modules
 RUN a2enmod rewrite
 
-# Copy and setup entrypoint script to fix permissions on volume mounts
 # Set working directory
 WORKDIR /var/www/html
 
@@ -32,15 +31,21 @@ COPY . /var/www/html/
 # Remove the empty index.html directory if it exists
 RUN rm -rf /var/www/html/index.html/
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
-
 # Set ServerName to suppress Apache warning
 RUN echo "ServerName abedeport.abejorralmuchopueblo.com" >> /etc/apache2/apache2.conf
+
+# Create a startup script that fixes permissions and starts Apache
+RUN echo '#!/bin/bash\n\
+# Set proper permissions for mounted volumes\n\
+chown -R www-data:www-data /var/www/html\n\
+chmod -R 755 /var/www/html\n\
+\n\
+# Start Apache in foreground\n\
+exec apache2-foreground' > /usr/local/bin/startup.sh && \
+    chmod +x /usr/local/bin/startup.sh
 
 # Expose port 80
 EXPOSE 80
 
-# Start Apache with permission fix
-CMD ["apache2-foreground"] 
+# Use the startup script
+CMD ["/usr/local/bin/startup.sh"] 
