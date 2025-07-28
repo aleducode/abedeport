@@ -44,33 +44,58 @@ echo "Starting ABEDEPORT Application..."\n\
 \n\
 # Fix permissions for mounted volumes (this handles the admin, assets, noticias folders)\n\
 echo "Fixing permissions for mounted volumes..."\n\
+\n\
 if [ -d "/var/www/html/admin" ]; then\n\
+    echo "Fixing admin directory permissions..."\n\
     chown -R www-data:www-data /var/www/html/admin\n\
     chmod -R 755 /var/www/html/admin\n\
+    # Ensure index.php has correct permissions\n\
+    if [ -f "/var/www/html/admin/index.php" ]; then\n\
+        chmod 644 /var/www/html/admin/index.php\n\
+        echo "Admin index.php permissions fixed"\n\
+    fi\n\
+    echo "Admin permissions fixed!"\n\
 fi\n\
 \n\
 if [ -d "/var/www/html/assets" ]; then\n\
+    echo "Fixing assets directory permissions..."\n\
     chown -R www-data:www-data /var/www/html/assets\n\
     chmod -R 755 /var/www/html/assets\n\
+    echo "Assets permissions fixed!"\n\
 fi\n\
 \n\
 if [ -d "/var/www/html/noticias" ]; then\n\
+    echo "Fixing noticias directory permissions..."\n\
     chown -R www-data:www-data /var/www/html/noticias\n\
     chmod -R 755 /var/www/html/noticias\n\
+    echo "Noticias permissions fixed!"\n\
 fi\n\
 \n\
 # Ensure the main index file has correct permissions\n\
 if [ -f "/var/www/html/index.html" ]; then\n\
     chown www-data:www-data /var/www/html/index.html\n\
     chmod 644 /var/www/html/index.html\n\
+    echo "Main index.html permissions fixed"\n\
 fi\n\
 \n\
 # Set ServerName dynamically if provided via environment\n\
 if [ ! -z "$APACHE_SERVER_NAME" ]; then\n\
     echo "ServerName $APACHE_SERVER_NAME" >> /etc/apache2/apache2.conf\n\
+    echo "Apache ServerName set to: $APACHE_SERVER_NAME"\n\
 fi\n\
 \n\
-echo "Starting Apache..."\n\
+# Final verification - test if admin index.php is readable\n\
+if [ -f "/var/www/html/admin/index.php" ]; then\n\
+    if sudo -u www-data test -r /var/www/html/admin/index.php; then\n\
+        echo "✅ Admin index.php is readable by www-data"\n\
+    else\n\
+        echo "❌ Admin index.php is NOT readable by www-data - fixing..."\n\
+        chmod 644 /var/www/html/admin/index.php\n\
+        chown www-data:www-data /var/www/html/admin/index.php\n\
+    fi\n\
+fi\n\
+\n\
+echo "All permissions fixed. Starting Apache..."\n\
 # Start Apache in foreground\n\
 exec apache2-foreground' > /usr/local/bin/startup.sh && \
     chmod +x /usr/local/bin/startup.sh
