@@ -18,6 +18,7 @@ services:
       - ./assets:/var/www/html/assets
       - ./noticias:/var/www/html/noticias
       - ./apache-config/000-default.conf:/etc/apache2/sites-available/000-default.conf
+      - ./docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
     depends_on:
       - db
     environment:
@@ -27,6 +28,8 @@ services:
       - DB_PASSWORD=${DB_PASSWORD:-abedeport_strong_password}
       - APP_ENV=production
       - APP_DEBUG=false
+      - APACHE_SERVER_NAME=abedeport.abejorralmuchopueblo.com
+    command: ["/usr/local/bin/docker-entrypoint.sh"]
     networks:
       - abedeport-network
 
