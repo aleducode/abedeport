@@ -14,7 +14,6 @@ services:
   app:
     build: .
     container_name: abedeport-app
-    platform: linux/amd64
     restart: unless-stopped
     volumes:
       - ./admin:/var/www/html/admin
@@ -55,7 +54,6 @@ services:
   db:
     image: mysql:8.0
     container_name: abedeport-db
-    platform: linux/amd64
     restart: unless-stopped
     ports:
       - "3306:3306"
@@ -75,7 +73,6 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: abedeport-phpmyadmin
-    platform: linux/amd64
     restart: unless-stopped
     environment:
       PMA_HOST: db
