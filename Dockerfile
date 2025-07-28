@@ -28,16 +28,12 @@ WORKDIR /var/www/html
 # Copy application files
 COPY . /var/www/html/
 
-# Copy and make entrypoint script executable
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
-# Create .htaccess for URL rewriting
-RUN echo 'RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^(.*)$ index.php [QSA,L]' > /var/www/html/.htaccess
+# Set ServerName to suppress Apache warning
+RUN echo "ServerName abedeport.abejorralmuchopueblo.com" >> /etc/apache2/apache2.conf
 
 # Expose port 80
 EXPOSE 80

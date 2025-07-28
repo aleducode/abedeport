@@ -29,7 +29,6 @@ services:
       - APP_ENV=production
       - APP_DEBUG=false
       - APACHE_SERVER_NAME=abedeport.abejorralmuchopueblo.com
-    command: ["/usr/local/bin/docker-entrypoint.sh"]
     networks:
       - abedeport-network
 
