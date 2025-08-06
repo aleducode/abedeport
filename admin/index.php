@@ -12,7 +12,7 @@ session_start();
 * Si el usuario ya se encuentra logueado, redirigirlo a la página de home
  */
 if (isset($_SESSION['usuario'])) {
-    header('Location: app/home');
+    header('Location: home');
     exit();
 }
 
