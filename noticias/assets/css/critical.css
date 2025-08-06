@@ -1,0 +1,83 @@
+/* Critical CSS for above-the-fold content */
+/* Load this inline in <head> for faster initial render */
+
+body {
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+.header-area {
+    background: #000;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.navbar-brand img {
+    max-height: 40px;
+    width: auto;
+}
+
+.hero-slider {
+    height: 100vh;
+    min-height: 600px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-slider img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Preload critical fonts */
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/opensans-regular.woff2') format('woff2');
+}
+
+/* Loading spinner */
+.page-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Hide non-critical content initially */
+.below-fold {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.loaded .below-fold {
+    opacity: 1;
+}
