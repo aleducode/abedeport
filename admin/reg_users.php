@@ -1,42 +1,33 @@
 <?php
+require_once 'conn.php';
 
-/*
-* Validación de Usuarios 
-* Seguridad de la aplicación en el home
+if (isset($_POST['btn-reg'])) {
+    $insert = $conn->prepare('INSERT INTO usuario(nombre, apellido, documento, correo, password, red_social) VALUES(?,?,?,?,?,?)');
+    $insert->bindParam(1, $_POST['nombre']);
+    $insert->bindParam(2, $_POST['apellido']);
+    $insert->bindParam(3, $_POST['documento']);
+    $insert->bindParam(4, $_POST['correo']);
+    $pass = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $insert->bindParam(5, $pass);
+    $red_social = isset($_POST['red_social']) && !empty($_POST['red_social']) ? $_POST['red_social'] : '';
+    $insert->bindParam(6, $red_social);
 
-*/
-include 'conn.php';
-session_start();
-/*
-* Validar si el usuario ya se encuentra logueado
-* Si el usuario ya se encuentra logueado, redirigirlo a la página de home
- */
-if (isset($_SESSION['usuario'])) {
-    header('Location: app/home');
-    exit();
-}
+    /* Data Validation */
+    $search = $conn->prepare('SELECT * FROM usuario WHERE correo = ?');
+    $search->bindParam(1, $_POST['correo']);
+    $search->execute();
+    $result = $search->fetch(PDO::FETCH_ASSOC);
 
-if (isset($_POST['btnlogin'])) {
-    $login = $conn->prepare("SELECT * FROM usuario WHERE correo = ?");
-    $login->bindParam(1, $_POST['correo']);
-    $login->execute();
-    $result = $login->fetch(PDO::FETCH_ASSOC);
-
-    if (is_array($result)) {
-        if (password_verify($_POST['password'], $result['password'])) {
-            $_SESSION['usuario'] = $result['correo'];
-            $_SESSION['id_usuario'] = $result['id_usuario'];
-            header('Location: home');
-            exit();
-        } else {
-            $msg = array("Contraseña incorrecta", "warning");
-        }
+    if ($result) {
+        $msg = array("Correo ya existente", "danger");
+    }
+    /* Data Validation */ elseif ($insert->execute()) {
+        $msg = array("El usuario fue creado", "success");
     } else {
-        $msg = array("El correo no existe", "danger");
+        $msg = array("El usuario no fue creado", "danger");
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es-CO" data-bs-theme="dark" class="h-100">
 
@@ -82,7 +73,7 @@ if (isset($_POST['btnlogin'])) {
         }
         
         .login-container {
-            max-width: 450px;
+            max-width: 550px;
             margin: 2rem auto;
         }
         
@@ -141,34 +132,60 @@ if (isset($_POST['btnlogin'])) {
             <div class="card-body p-4 p-lg-5">
                 <div class="text-center mb-4">
                     <img src="../assets/img/sports.png" class="login-logo img-fluid rounded" alt="AEDEPORT Logo">
-                    <h1 class="card-title h3 mt-3">Iniciar Sesión</h1>
-                    <p class="text-muted small">Ingresa tus credenciales para acceder</p>
+                    <h1 class="card-title h3 mt-3">Registro de Usuario</h1>
+                    <p class="text-muted small">Completa el formulario para crear tu cuenta</p>
                 </div>
 
                 <form action="" method="post" class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombres" required>
+                                <label for="nombre"><i class="bi bi-person-fill me-2"></i>Nombres</label>
+                                <div class="invalid-feedback">Por favor ingresa tus nombres.</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Apellidos" required>
+                                <label for="apellido"><i class="bi bi-person-fill me-2"></i>Apellidos</label>
+                                <div class="invalid-feedback">Por favor ingresa tus apellidos.</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-floating mb-3">
                         <input type="email" class="form-control" id="correo" name="correo" placeholder="nombre@ejemplo.com" required>
                         <label for="correo"><i class="bi bi-envelope-fill me-2"></i>Correo Electrónico</label>
                         <div class="invalid-feedback">Por favor ingresa un correo electrónico válido.</div>
                     </div>
 
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="documento" name="documento" placeholder="Documento de identidad" required>
+                        <label for="documento"><i class="bi bi-card-text me-2"></i>Documento de identidad</label>
+                        <div class="invalid-feedback">Por favor ingresa tu documento de identidad.</div>
+                    </div>
+
                     <div class="form-floating mb-4">
                         <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
                         <label for="password"><i class="bi bi-lock-fill me-2"></i>Contraseña</label>
-                        <div class="invalid-feedback">Por favor ingresa tu contraseña.</div>
-                        <div class="form-text text-end">
-                            <a href="forgotpass" class="small">¿Olvidaste la contraseña?</a>
-                        </div>
+                        <div class="invalid-feedback">Por favor ingresa una contraseña.</div>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <input type="text" class="form-control" id="red_social" name="red_social" placeholder="Red Social (opcional)">
+                        <label for="red_social"><i class="bi bi-share-fill me-2"></i>Red Social (opcional)</label>
+                        <div class="form-text">Ej: Facebook, Instagram, Twitter, etc.</div>
                     </div>
 
                     <div class="d-grid gap-2 mb-4">
-                        <button type="submit" class="btn btn-primary btn-lg" name="btnlogin">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                        <button type="submit" class="btn btn-primary btn-lg" name="btn-reg">
+                            <i class="bi bi-person-plus-fill me-2"></i>Registrarse
                         </button>
                     </div>
 
                     <div class="text-center links-container">
-                        <p class="mb-0">¿No tienes una cuenta? <a href="reg_users" class="fw-semibold">Regístrate aquí</a></p>
+                        <p class="mb-0">¿Ya tienes una cuenta? <a href="./" class="fw-semibold">Iniciar sesión</a></p>
                     </div>
                 </form>
             </div>

@@ -1,16 +1,19 @@
 <?php
-// Database connection configuration using environment variables
-$servername = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?? 'db';
-$database = $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?? 'ABEDEPORT';
-$username = $_ENV['DB_USER'] ?? getenv('DB_USER') ?? 'abedeport_user';
-$password = $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?? 'abedeport_strong_password';
+// Database configuration for Docker environment
+$servername = getenv('DB_HOST') ?: "localhost";
+$username = getenv('DB_USER') ?: "root";
+$password = getenv('DB_PASSWORD') ?: "";
+$dbABEDEPORT = getenv('DB_NAME') ?: "ABEDEPORT";
 
 try {
-    $conn = new PDO("mysql:host=$servername;dbname=$database;charset=utf8mb4", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+  $conn = new PDO("mysql:host=$servername;dbname=$dbABEDEPORT;charset=utf8mb4", $username, $password);
+  // set the PDO error mode to exception
+  $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  // Set charset to ensure proper UTF-8 handling
+  $conn->exec("SET NAMES utf8mb4");
+  $conn->exec("SET CHARACTER SET utf8mb4");
+  $conn->exec("SET character_set_connection=utf8mb4");
 } catch(PDOException $e) {
-    // Log the error for debugging (in production, don't show detailed errors)
-    error_log("Database connection failed: " . $e->getMessage());
-    die("Connection failed. Please check your database configuration.");
-} 
+  echo "Conección fallida: " . $e->getMessage();
+}
+?>
