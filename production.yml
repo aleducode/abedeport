@@ -75,6 +75,7 @@ services:
   # phpMyAdmin for database management
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
+    platform: linux/arm64
     container_name: abedeport-phpmyadmin
     restart: unless-stopped
     environment:
