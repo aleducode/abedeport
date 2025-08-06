@@ -33,7 +33,7 @@ services:
     networks:
       - abedeport-network
     ports:
-      - "80:80"  # Direct port mapping for local development
+      - "8080:80"  # Direct port mapping for local development
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/"]
       interval: 30s
