@@ -126,6 +126,45 @@ $sport_categories = getSportCategories($post['etiquetas']);
     <meta name="author" content="<?php echo htmlspecialchars($post['nombre'] . ' ' . $post['apellido']); ?>">
     <meta name="keywords" content="<?php echo htmlspecialchars($post['etiquetas']); ?>">
     
+    <?php
+    // Get current URL
+    $current_url = "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $site_name = "AEDEPORT";
+    $description = htmlspecialchars($post['meta_descripcion'] ?: substr(strip_tags($post['contenido']), 0, 160));
+    $image_url = $post['imagen'] ? "https://" . $_SERVER['HTTP_HOST'] . "/" . $post['imagen'] : "https://" . $_SERVER['HTTP_HOST'] . "/assets/img/main_logo.png";
+    ?>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="<?php echo htmlspecialchars($post['titulo']); ?>">
+    <meta property="og:description" content="<?php echo $description; ?>">
+    <meta property="og:image" content="<?php echo $image_url; ?>">
+    <meta property="og:url" content="<?php echo $current_url; ?>">
+    <meta property="og:site_name" content="<?php echo $site_name; ?>">
+    <meta property="article:author" content="<?php echo htmlspecialchars($post['nombre'] . ' ' . $post['apellido']); ?>">
+    <meta property="article:published_time" content="<?php echo date('c', strtotime($post['fecha_publicacion'])); ?>">
+    <meta property="article:modified_time" content="<?php echo date('c', strtotime($post['fecha_actualizacion'])); ?>">
+    <?php if ($post['etiquetas']): 
+        $tags = array_map('trim', explode(',', $post['etiquetas']));
+        foreach ($tags as $tag): ?>
+    <meta property="article:tag" content="<?php echo htmlspecialchars($tag); ?>">
+    <?php endforeach; endif; ?>
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?php echo htmlspecialchars($post['titulo']); ?>">
+    <meta name="twitter:description" content="<?php echo $description; ?>">
+    <meta name="twitter:image" content="<?php echo $image_url; ?>">
+    <meta name="twitter:url" content="<?php echo $current_url; ?>">
+    <meta name="twitter:site" content="@aedeport">
+    <meta name="twitter:creator" content="@aedeport">
+    
+    <!-- Additional Meta Tags for Social Media -->
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta name="twitter:image:alt" content="<?php echo htmlspecialchars($post['titulo']); ?>">
+    
     <link rel="shortcut icon" href="../assets/img/sports.png">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
     

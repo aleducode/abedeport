@@ -176,11 +176,28 @@ if ($redirect_url) {
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="etiquetas" class="form-label">Etiquetas</label>
-                                <input type="text" class="form-control" id="etiquetas" name="etiquetas" 
-                                       value="<?php echo htmlspecialchars($post['etiquetas'] ?? ''); ?>" 
-                                       placeholder="deporte, recreación, salud">
-                                <div class="form-text">Separadas por comas</div>
+                                <label class="form-label">Etiquetas</label>
+                                <?php 
+                                $predefined_tags = getPredefinedTags();
+                                $selected_tags = isset($post['etiquetas']) ? explode(',', $post['etiquetas']) : [];
+                                $selected_tags = array_map('trim', $selected_tags);
+                                ?>
+                                <div class="row">
+                                    <?php foreach ($predefined_tags as $key => $label): ?>
+                                        <div class="col-md-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" 
+                                                       name="etiquetas_check[]" value="<?php echo $key; ?>" 
+                                                       id="tag_<?php echo $key; ?>"
+                                                       <?php echo in_array($key, $selected_tags) ? 'checked' : ''; ?>>
+                                                <label class="form-check-label" for="tag_<?php echo $key; ?>">
+                                                    <?php echo htmlspecialchars($label); ?>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                                <input type="hidden" name="etiquetas" id="etiquetas_hidden" value="<?php echo htmlspecialchars($post['etiquetas'] ?? ''); ?>">
                             </div>
                         </div>
                     </div>
@@ -287,6 +304,21 @@ document.getElementById('meta_descripcion').addEventListener('input', function()
     const count = this.value.length;
     document.getElementById('meta-count').textContent = count;
 });
+
+// Handle tag checkboxes
+function updateTagsField() {
+    const checkboxes = document.querySelectorAll('input[name="etiquetas_check[]"]:checked');
+    const selectedTags = Array.from(checkboxes).map(cb => cb.value);
+    document.getElementById('etiquetas_hidden').value = selectedTags.join(', ');
+}
+
+// Add event listeners to all tag checkboxes
+document.querySelectorAll('input[name="etiquetas_check[]"]').forEach(checkbox => {
+    checkbox.addEventListener('change', updateTagsField);
+});
+
+// Initialize tags field on page load
+updateTagsField();
 
 // Preview functionality
 function previewPost() {
