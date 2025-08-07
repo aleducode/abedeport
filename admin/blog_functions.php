@@ -13,6 +13,9 @@ function getPredefinedTags() {
 
 // Function to create URL-friendly slug
 function createSlug($string) {
+    if (empty($string)) {
+        return '';
+    }
     $string = strtolower($string);
     $string = preg_replace('/[^a-z0-9\s-]/', '', $string);
     $string = preg_replace('/[\s-]+/', '-', $string);
@@ -185,6 +188,19 @@ function updateBlogPost($id, $data) {
     
     $existing_post = getBlogPostById($id);
     if (!$existing_post) {
+        return false;
+    }
+    
+    // Handle partial updates - merge with existing data
+    if (!isset($data['titulo'])) {
+        $data['titulo'] = $existing_post['titulo'];
+    }
+    if (!isset($data['contenido'])) {
+        $data['contenido'] = $existing_post['contenido'];
+    }
+    
+    // Validate required fields
+    if (empty($data['titulo'])) {
         return false;
     }
     

@@ -6,6 +6,7 @@ Description:  You can add your custom CSS here and it will overwrite template st
 /* Blog Post Cards Height Protection */
 .posts--cards .posts__item.card {
     height: 100% !important;
+    width: 100% !important;
     display: flex;
     flex-direction: column;
 }
