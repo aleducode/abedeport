@@ -2,4 +2,88 @@
 File Name: 		custom.css
 Description:  You can add your custom CSS here and it will overwrite template styles
 */
+
+/* Blog Post Cards Height Protection */
+.posts--cards .posts__item.card {
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
+}
+
+.posts--cards .posts__item.card .posts__thumb {
+    flex-shrink: 0;
+    height: 200px !important;
+    overflow: hidden;
+}
+
+.posts--cards .posts__item.card .posts__thumb img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.posts--cards .posts__item.card .posts__inner.card__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px !important;
+}
+
+.posts--cards .posts__item.card .posts__title {
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-start;
+}
+
+.posts--cards .posts__item.card .posts__title a {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+    max-height: 3.9em;
+}
+
+.posts--cards .posts__item.card .posts__date {
+    flex-shrink: 0;
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+.posts--cards .posts__item.card .posts__excerpt {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
+    max-height: 4.2em;
+}
+
+/* Grid Container Height Protection */
+.post-grid.posts--cards {
+    align-items: stretch;
+}
+
+.post-grid.posts--cards .post-grid__item {
+    display: flex;
+    margin-bottom: 30px;
+}
+
+/* Ensure uniform category label positioning */
+.posts--cards .posts__cat {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 2;
+}
+
+.posts--cards .posts__cat .posts__cat-label {
+    margin-right: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
 /*# sourceMappingURL=maps/custom.css.map */

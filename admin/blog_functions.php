@@ -5,20 +5,9 @@ include "conn.php";
 function getPredefinedTags() {
     return [
         'futbol' => 'Fútbol',
+        'futsal' => 'Futsal',
         'baloncesto' => 'Baloncesto',
-        'volleyball' => 'Volleyball',
-        'natacion' => 'Natación',
-        'atletismo' => 'Atletismo',
-        'tenis' => 'Tenis',
-        'ciclismo' => 'Ciclismo',
-        'recreacion' => 'Recreación',
-        'salud' => 'Salud y Bienestar',
-        'eventos' => 'Eventos',
-        'noticias' => 'Noticias',
-        'entrenamiento' => 'Entrenamiento',
-        'competencia' => 'Competencia',
-        'infantil' => 'Deporte Infantil',
-        'adulto' => 'Deporte Adulto'
+        'voleibol' => 'Voleibol'
     ];
 }
 
