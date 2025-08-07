@@ -46,6 +46,47 @@
                     margin: 0 auto !important;
                 }
             }
+            
+            /* Enhanced smooth scroll animation */
+            html {
+                scroll-behavior: smooth;
+            }
+            
+            /* Custom smooth scroll with enhanced timing */
+            @media (prefers-reduced-motion: no-preference) {
+                html {
+                    scroll-behavior: smooth;
+                }
+                
+                /* Enhanced scroll animation using CSS transitions */
+                * {
+                    scroll-behavior: smooth;
+                    scroll-padding-top: 100px;
+                }
+            }
+            
+            /* Offset for fixed header with better spacing */
+            section[id], div[id] {
+                scroll-margin-top: 120px;
+            }
+            
+            /* Enhanced animation for scroll targets */
+            #quienes-somos {
+                transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+            
+            /* Smooth reveal animation on scroll */
+            .animate-on-scroll {
+                opacity: 0;
+                transform: translateY(30px);
+                transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                transition-delay: 0.2s;
+            }
+            
+            .animate-on-scroll.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
         </style>
     </head>
     <body data-mobile-nav-style="full-screen-menu" data-mobile-nav-bg-color="#353642" class="custom-cursor overflow-x-hidden"> 
@@ -113,7 +154,7 @@
         </header>
         <!-- end header --> 
         <!-- start hero section -->
-        <section class="top-space-padding pb-0 bg-gradient-very-light-gray overflow-hidden position-relative lg-pb-30px"> 
+        <section id="inicio" class="top-space-padding pb-0 bg-gradient-very-light-gray overflow-hidden position-relative lg-pb-30px"> 
             <div class="container h-100">
                 <div class="position-absolute top-120px left-40 animation-rotation d-none d-xl-block">
                     <img src="https://craftohtml.themezaa.com/images/demo-data-analysis-bg-01.png" data-bottom-top="transform: rotate(-50deg) translateY(-50px)" data-top-bottom="transform:rotate(10deg) translateY(50px)" alt="">
@@ -160,13 +201,13 @@
         </section>
         <!-- end hero section -->  
         <!-- start section -->
-        <section class="p-0 position-relative">
+        <section id="nosotros" class="p-0 position-relative">
             <img src="assets/landing/images/demo-data-analysis-bg-06.png" class="position-absolute top-20 left-0px" data-bottom-top="transform: translateY(150px)" data-top-bottom="transform: translateY(-150px)" alt=""/>
             <img src="assets/landing/images/demo-data-analysis-bg-07.png" class="position-absolute top-10 right-0px lg-w-30 lg-bottom-0px" data-bottom-top="transform: translateY(150px)" data-top-bottom="transform: translateY(-150px)" alt=""/>
-            <div class="container">
+            <div class="container" id="nosotros">
                 <div class="row justify-content-center mb-2" data-anime='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
                     <div class="col-xxl-6 col-xl-7 col-lg-8 col-md-9 text-center">
-                        <div class="bg-base-color fw-600 text-white text-uppercase ps-20px pe-20px fs-12 border-radius-100px d-inline-block mb-15px">¿Quiénes somos?</div>
+                        <div class="bg-base-color fw-600 text-white text-uppercase ps-20px pe-20px fs-12 border-radius-100px d-inline-block mb-15px">Nosotros</div>
                         <h2 class="fw-700 alt-font text-dark-gray ls-minus-1px">Abedeport es una página web dedicada a promover el deporte y el bienestar del pueblo.</h2>
                         <p>Ofrecemos noticias, consejos y actividades para fomentar un estilo de vida saludable y activo, acercando el deporte a toda la comunidad.</p>
                     </div>
@@ -243,7 +284,7 @@
         </section>
         <!-- end section -->
         <!-- start section --> 
-        <section class="position-relative pb-0">
+        <section id="quienes-somos" class="position-relative pb-0">
             <div class="container position-relative">
                 <div class="row justify-content-center mb-1">
                     <div class="col-lg-8 text-center position-relative">
@@ -395,10 +436,7 @@
                             <li class="nav-item active"><a href="#inicio" class="nav-link">Inicio</a></li>
                             <li class="nav-item"><a href="#nosotros" class="nav-link">Nosotros</a></li>
                             <li class="nav-item"><a href="#quienes-somos" class="nav-link">¿Quiénes Somos?</a></li>
-                            <li class="nav-item"><a href="demo-data-analysis-cases.html" class="nav-link">Cases</a></li>
-                            <li class="nav-item"><a href="demo-data-analysis-testimonials.html" class="nav-link">Testimonios</a></li>
-                            <li class="nav-item"><a href="demo-data-analysis-pricing.html" class="nav-link">Precios</a></li>
-                            <li class="nav-item"><a href="demo-data-analysis-contact.html" class="nav-link">Contacto</a></li>
+
                         </ul>
                     </div>
                     <!-- end footer column -->                  
@@ -420,5 +458,62 @@
         <script type="text/javascript" src="assets/landing/js/jquery.js"></script>
         <script type="text/javascript" src="assets/landing/js/vendors.min.js"></script>
         <script type="text/javascript" src="assets/landing/js/main.js"></script>
+        
+        <!-- Enhanced smooth scroll script -->
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enhanced smooth scroll for navigation links
+            const navLinks = document.querySelectorAll('a[href^="#"]');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        // Calculate offset for better positioning
+                        const offset = 100;
+                        const elementPosition = targetElement.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - offset;
+                        
+                        // Smooth scroll with custom timing
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Add a subtle animation effect to the target
+                        targetElement.style.transition = 'all 0.3s ease-out';
+                        targetElement.style.transform = 'scale(1.01)';
+                        
+                        setTimeout(() => {
+                            targetElement.style.transform = 'scale(1)';
+                        }, 300);
+                    }
+                });
+            });
+            
+            // Intersection Observer for scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe elements with animation class
+            document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
+        });
+        </script>
     </body>
 </html>

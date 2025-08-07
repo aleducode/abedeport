@@ -63,7 +63,9 @@ function uploadImage($file, $target_dir = "blog_images/") {
     $target_file = $target_dir . $file_name;
     
     if (move_uploaded_file($file['tmp_name'], $target_file)) {
-        return ['success' => $target_file];
+        // Return the web-accessible path (admin/blog_images/filename.jpg)
+        $web_path = 'admin/' . $target_file;
+        return ['success' => $web_path];
     } else {
         return ['error' => 'Error al subir el archivo.'];
     }
