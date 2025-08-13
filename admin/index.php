@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 /*
 * Validación de Usuarios 
@@ -6,7 +7,6 @@
 
 */
 include 'conn.php';
-session_start();
 /*
 * Validar si el usuario ya se encuentra logueado
 * Si el usuario ya se encuentra logueado, redirigirlo a la página de home

@@ -164,9 +164,9 @@ if (isset($_SESSION['usuario'])) {
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'pubs') ? 'active' : ''; ?>" 
-                               href="?page=pubs">
-                                <i class="bi bi-newspaper me-1"></i>Publicaciones
+                            <a class="nav-link <?php echo (isset($_GET['page']) && ($_GET['page'] == 'tournament_management' || $_GET['page'] == 'tournament_standings')) ? 'active' : ''; ?>" 
+                               href="?page=tournament_management">
+                                <i class="bi bi-trophy-fill me-1"></i>Torneos
                             </a>
                         </li>
                         <li class="nav-item">
@@ -175,12 +175,7 @@ if (isset($_SESSION['usuario'])) {
                                 <i class="bi bi-people-fill me-1"></i>Integrantes
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'blog_viewer') ? 'active' : ''; ?>" 
-                               href="?page=blog_viewer" target="_blank">
-                                <i class="bi bi-newspaper me-1"></i>Ver Blog
-                            </a>
-                        </li>
+
                     </ul>
                     
                     <div class="d-flex align-items-center">
@@ -211,7 +206,8 @@ if (isset($_SESSION['usuario'])) {
                 'view_post' => 'view_post.php',
                 'manage_posts' => 'manage_posts.php',
                 'preview_post' => 'preview_post.php',
-                'blog_viewer' => 'blog_viewer.php'
+                'tournament_management' => 'tournament_management.php',
+                'tournament_standings' => 'tournament_standings.php'
             ];
             
             if (array_key_exists($page, $admin_pages)) {
