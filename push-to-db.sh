@@ -63,6 +63,12 @@ case $ENVIRONMENT in
             exit 0
         fi
         
+        # Load environment variables from .env file
+        if [ -f ".env" ]; then
+            echo "📄 Loading environment from .env file..."
+            export $(grep -v '^#' .env | xargs)
+        fi
+        
         # Set up environment variables
         DB_PASSWORD=${DB_PASSWORD:-abedeport_strong_password}
         MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_strong_password}

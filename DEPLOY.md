@@ -31,13 +31,23 @@ Simple deployment script that pushes pre-generated tournament data to the databa
 - `push-to-db.sh` - Simple deployment script
 - No Python dependencies required!
 
-## 🔐 **Production Setup (Optional)**
+## 🔐 **Production Setup**
 
-Set environment variables for custom passwords:
+1. **Create .env file with your passwords:**
 ```bash
-export DB_PASSWORD='your_secure_password'
-export MYSQL_ROOT_PASSWORD='your_root_password'
-./push-to-db.sh prod
+cp .env.example .env
+nano .env
+```
+
+2. **Edit .env file:**
+```bash
+DB_PASSWORD=your_secure_production_password
+MYSQL_ROOT_PASSWORD=your_secure_root_password
+```
+
+3. **Deploy:**
+```bash
+sudo ./push-to-db.sh prod
 ```
 
 ## ✅ **Success Output**
