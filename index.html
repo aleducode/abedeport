@@ -19,7 +19,7 @@
         <link rel="icon" type="image/x-icon" href="assets/img/favicons/favicon.ico">
         <link rel="apple-touch-icon" sizes="120x120" href="assets/img/favicons/favicon-120.png">
         <link rel="apple-touch-icon" sizes="152x152" href="assets/img/favicons/favicon-152.png">
-        <!-- google fonts preconnect -->
+        <!-- google fonts preconnect with font-display optimization -->
         <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <!-- style sheets and font icons  -->
@@ -115,9 +115,18 @@
                 <div class="container-fluid">
                     <div class="col-auto">
                         <a class="navbar-brand" href="#inicio">
-                            <img src="assets/img/main_logo.png" data-at2x="assets/img/main_logo.png" alt="" class="default-logo">
-                            <img src="assets/img/main_logo.png" data-at2x="assets/img/main_logo.png" alt="" class="alt-logo">
-                            <img src="assets/img/main_logo.png" data-at2x="assets/img/main_logo.png" alt="" class="mobile-logo"> 
+                            <picture class="main-logo">
+                                <source srcset="assets/img/main_logo.webp" type="image/webp">
+                                <img src="assets/img/main_logo.png" alt="ABEDEPORT Logo" class="default-logo" width="200" height="200" loading="eager">
+                            </picture>
+                            <picture class="main-logo">
+                                <source srcset="assets/img/main_logo.webp" type="image/webp">
+                                <img src="assets/img/main_logo.png" alt="ABEDEPORT Logo" class="alt-logo" width="200" height="200" loading="eager">
+                            </picture>
+                            <picture class="main-logo">
+                                <source srcset="assets/img/main_logo.webp" type="image/webp">
+                                <img src="assets/img/main_logo.png" alt="ABEDEPORT Logo" class="mobile-logo" width="150" height="150" loading="eager">
+                            </picture>
                         </a>
                     </div>
                     <div class="col-auto menu-order left-nav">
@@ -158,13 +167,13 @@
         <section id="inicio" class="top-space-padding pb-0 bg-gradient-very-light-gray overflow-hidden position-relative lg-pb-30px"> 
             <div class="container h-100">
                 <div class="position-absolute top-120px left-40 animation-rotation d-none d-xl-block">
-                    <img src="https://craftohtml.themezaa.com/images/demo-data-analysis-bg-01.png" data-bottom-top="transform: rotate(-50deg) translateY(-50px)" data-top-bottom="transform:rotate(10deg) translateY(50px)" alt="">
+                    <img src="assets/img/demo-data-analysis-bg-01.png" data-bottom-top="transform: rotate(-50deg) translateY(-50px)" data-top-bottom="transform:rotate(10deg) translateY(50px)" alt="Background decoration" width="80" height="80" loading="lazy">
                 </div> 
                 <div class="position-absolute top-20 right-10 animation-rotation d-none d-sm-block">
-                    <img src="https://craftohtml.themezaa.com/images/demo-data-analysis-bg-03.png" data-bottom-top="transform: rotate(-50deg) translateY(-50px)" data-top-bottom="transform:rotate(10deg) translateY(50px)" alt="">
+                    <img src="assets/img/demo-data-analysis-bg-03.png" data-bottom-top="transform: rotate(-50deg) translateY(-50px)" data-top-bottom="transform:rotate(10deg) translateY(50px)" alt="Background decoration" width="60" height="60" loading="lazy">
                 </div> 
                 <div class="position-absolute bottom-50px left-0px animation-float d-none d-xl-block">
-                    <img src="https://craftohtml.themezaa.com/images/demo-data-analysis-bg-02.png" data-bottom-top="transform: translateY(150px)" data-top-bottom="transform: translateY(-150px)" alt="">
+                    <img src="assets/img/demo-data-analysis-bg-02.png" data-bottom-top="transform: translateY(150px)" data-top-bottom="transform: translateY(-150px)" alt="Background decoration" width="100" height="100" loading="lazy">
                 </div> 
                 <div class="row align-items-center h-100 md-mt-50px">
                     <div class="col-xl-6 col-lg-6 mb-9 position-relative z-index-1" data-anime='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>  
@@ -172,7 +181,12 @@
                             <div class="flex-shrink-0 bg-cabaret-red fw-600 text-white text-uppercase ps-20px pe-20px fs-12 me-15px border-radius-100px">ABEDEPORT</div>
                             <span class="fs-18 fw-500" data-fancy-text='{ "effect": "rotate", "string": ["Promoción del deporte", "Actividades comunitarias", "Salud y bienestar"], "speed": 50, "duration": 3500 }'></span> 
                         </div>
-                        <img src="assets/img/main_logo.png" class="img-fluid m-0 p-0">
+                        <!-- Screen reader friendly h1 for accessibility -->
+                        <h1 class="sr-only">ABEDEPORT - Promoviendo el deporte y la recreación para todos</h1>
+                        <picture class="main-logo">
+                            <source srcset="assets/img/main_logo.webp" type="image/webp">
+                            <img src="assets/img/main_logo.png" class="img-fluid m-0 p-0" alt="ABEDEPORT Logo" width="300" height="300" loading="eager">
+                        </picture>
                         <div class="alt-font fw-500 fs-19 w-85 sm-w-100 mb-35px xs-mb-25px">Todos por el deporte y la recreación</div>
                         <a href="#nosotros" class="btn btn-extra-large btn-dark-gray btn-hover-animation-switch btn-round-edge btn-box-shadow btn-icon-left me-25px">
                             <span> 
@@ -192,7 +206,10 @@
                     <div class="col-xl-6 col-lg-6 align-self-end">
                         <!-- Hero image removed to avoid loading issues -->
                         <div class="outside-box-right-20 text-end position-relative z-index-9 animation-float">
-                            <img src="assets/landing/images/landing.png" alt=""> 
+                            <picture>
+                                <source srcset="assets/landing/images/landing.webp" type="image/webp">
+                                <img src="assets/landing/images/landing.png" alt="ABEDEPORT Sports" width="600" height="600" loading="eager">
+                            </picture>
                         </div>
                     </div>
                 </div> 
@@ -214,7 +231,7 @@
                     <div class="col icon-with-text-style-02 transition-inner-all mb-30px">
                         <div class="feature-box feature-box-left-icon text-start bg-ghost-white border-radius-4px ps-10 pe-10 pt-8 pb-8 overflow-hidden last-paragraph-no-margin xs-pe-5 xs-ps-5">
                             <div class="feature-box-icon">
-                                <img src="https://craftohtml.themezaa.com/images/demo-data-analysis-icon-01.png" alt=""/>
+                                <img src="assets/img/demo-data-analysis-icon-01.png" alt="Sports promotion icon" width="60" height="60" loading="lazy"/>
                             </div>
                             <div class="feature-box-content">
                                 <span class="d-inline-block alt-font text-dark-gray fs-20 fw-600 mb-5px">Promoción del deporte</span>
@@ -227,7 +244,7 @@
                     <div class="col icon-with-text-style-02 transition-inner-all mb-30px">
                         <div class="feature-box feature-box-left-icon text-start bg-cosmic-latte-white border-radius-4px ps-10 pe-10 pt-8 pb-8 overflow-hidden last-paragraph-no-margin xs-pe-5 xs-ps-5">
                             <div class="feature-box-icon">
-                                <img src="https://craftohtml.themezaa.com/images/demo-data-analysis-icon-02.png" alt=""/>
+                                <img src="assets/img/demo-data-analysis-icon-02.png" alt="Community activities icon" width="60" height="60" loading="lazy"/>
                             </div>
                             <div class="feature-box-content">
                                 <span class="d-inline-block alt-font text-dark-gray fs-20 fw-600 mb-5px">Actividades comunitarias</span>
@@ -240,7 +257,6 @@
                     <div class="col icon-with-text-style-02 transition-inner-all mb-30px">
                         <div class="feature-box feature-box-left-icon text-start bg-chablis-red border-radius-4px ps-10 pe-10 pt-8 pb-8 overflow-hidden last-paragraph-no-margin position-relative xs-pe-5 xs-ps-5">
                             <div class="feature-box-icon">
-                                <img src="https://craftohtml.themezaa.com/images/demo-data-analysis-icon-03.png" alt=""/>
                             </div>
                             <div class="feature-box-content">
                                 <div class="bg-white fw-600 text-dark-gray text-uppercase ps-20px pe-20px fs-12 border-radius-100px d-inline-block mb-10px position-absolute right-25px top-25px box-shadow-medium-bottom xs-position-relative xs-right-0px xs-top-0px">Popular</div>
@@ -254,7 +270,7 @@
                     <div class="col icon-with-text-style-02 transition-inner-all mb-30px">
                         <div class="feature-box feature-box-left-icon text-start bg-lavender-violet border-radius-4px ps-10 pe-10 pt-8 pb-8 overflow-hidden last-paragraph-no-margin xs-pe-5 xs-ps-5">
                             <div class="feature-box-icon">
-                                <img src="https://craftohtml.themezaa.com/images/demo-data-analysis-icon-04.png" alt=""/>
+                                <img src="assets/img/demo-data-analysis-icon-04.png" alt="Sports inclusion icon" width="60" height="60" loading="lazy"/>
                             </div>
                             <div class="feature-box-content">
                                 <span class="d-inline-block alt-font text-dark-gray fs-20 fw-600 mb-5px">Inclusión deportiva</span>
@@ -300,7 +316,7 @@
                                 <!-- Trophy SVG Icon -->
                                 <svg width="56" height="56" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M17 5V3H7v2M21 5a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V5h18v0z"/><path d="M7 10v2a5 5 0 0 0 10 0v-2"/></svg>
                             </div>
-                            <h4 class="fw-bold mb-2">Nuestra Visión</h4>
+                            <h3 class="fw-bold mb-2">Nuestra Visión</h3>
                             <p>Ser referentes en la promoción del deporte y la recreación, contribuyendo al bienestar y desarrollo de la comunidad.</p>
                         </div>
                     </div>
@@ -311,7 +327,7 @@
                                 <!-- Group SVG Icon -->
                                 <svg width="56" height="56" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21v-2a4.5 4.5 0 0 1 9 0v2"/><path d="M17 11a4 4 0 0 1 0 8v2"/></svg>
                             </div>
-                            <h4 class="fw-bold mb-2">Nuestro Equipo</h4>
+                            <h3 class="fw-bold mb-2">Nuestro Equipo</h3>
                             <p>Contamos con profesionales apasionados por el deporte y comprometidos con el bienestar de la comunidad.</p>
                         </div>
                     </div>
@@ -322,7 +338,7 @@
                                 <!-- Heart SVG Icon -->
                                 <svg width="56" height="56" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 21s-8-6.58-8-11.5A5.5 5.5 0 0 1 12 4.5a5.5 5.5 0 0 1 8 5.0C20 14.42 12 21 12 21z"/></svg>
                             </div>
-                            <h4 class="fw-bold mb-2">Nuestros Valores</h4>
+                            <h3 class="fw-bold mb-2">Nuestros Valores</h3>
                             <p>Compromiso, inclusión, respeto y pasión por el deporte son los valores que guían nuestro trabajo diario.</p>
                         </div>
                     </div>
@@ -351,7 +367,7 @@
                                 <span class="alt-font fw-500 lh-26 fs-18 position-relative text-start">Ejecutivo de soporte <span class="fw-700 text-dark-gray d-block">1000+ satisfechos.</span></span>
                             </div>
                         </div>
-                        <img src="https://craftohtml.themezaa.com/images/demo-data-analysis-bg-09.png" class="position-absolute right-50px top-minus-180px animation-float xl-w-45 d-none d-lg-block" alt=""/>
+                        <img src="assets/img/demo-data-analysis-bg-09.png" class="position-absolute right-50px top-minus-180px animation-float xl-w-45 d-none d-lg-block" alt="Support decoration" width="120" height="120" loading="lazy"/>
                     </div>
                     <div class="col-lg-6">
                         <div class="accordion accordion-style-02" id="accordion-style-02" data-active-icon="icon-feather-minus" data-inactive-icon="icon-feather-plus">
@@ -414,7 +430,7 @@
             <div class="container">
                 <div class="row justify-content-center mb-30px mx-0">
                     <div class="col-12 position-relative text-center bg-dark-gray p-40px border-radius-6px position-relative overflow-hidden lg-p-30px">
-                        <h5 class="alt-font d-block d-xl-inline-block align-middle text-white mb-0 fw-600 me-35px lg-me-0 lg-mb-20px">Comencemos algo increíble juntos con ABEDEPORT.</h5>
+                        <h3 class="alt-font d-block d-xl-inline-block align-middle text-white mb-0 fw-600 me-35px lg-me-0 lg-mb-20px">Comencemos algo increíble juntos con ABEDEPORT.</h3>
                         <a href="noticias/" class="btn btn-large btn-white btn-hover-animation-switch btn-round-edge btn-box-shadow btn-icon-left fw-700">
                             <span> 
                                 <span class="btn-text">Comenzar</span>
@@ -428,7 +444,12 @@
                 <div class="row align-items-center">
                     <!-- start footer column -->
                     <div class="col-12 col-lg-auto md-mb-15px text-center text-lg-start"> 
-                        <a href="./" class="footer-logo"><img src="assets/img/main_logo.png" alt="ABEDEPORT"></a>
+                        <a href="./" class="footer-logo">
+                            <picture class="main-logo">
+                                <source srcset="assets/img/main_logo.webp" type="image/webp">
+                                <img src="assets/img/main_logo.png" alt="ABEDEPORT Logo" width="120" height="120" loading="lazy">
+                            </picture>
+                        </a>
                     </div>
                     <!-- end footer column -->
                     <!-- start footer column -->
@@ -455,66 +476,64 @@
             </a>
         </div>
         <!-- end scroll progress -->
-        <!-- javascript libraries -->
+        <!-- Critical JavaScript - Load immediately for essential functionality -->
         <script type="text/javascript" src="assets/landing/js/jquery.js"></script>
         <script type="text/javascript" src="assets/landing/js/vendors.min.js"></script>
         <script type="text/javascript" src="assets/landing/js/main.js"></script>
-        
-        <!-- Enhanced smooth scroll script -->
         <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Enhanced smooth scroll for navigation links
-            const navLinks = document.querySelectorAll('a[href^="#"]');
-            
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-                    
-                    if (targetElement) {
-                        // Calculate offset for better positioning
-                        const offset = 100;
-                        const elementPosition = targetElement.getBoundingClientRect().top;
-                        const offsetPosition = elementPosition + window.pageYOffset - offset;
+            document.addEventListener('DOMContentLoaded', function() {
+                // Enhanced smooth scroll for navigation links
+                const navLinks = document.querySelectorAll('a[href^="#"]');
+                
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
                         
-                        // Smooth scroll with custom timing
-                        window.scrollTo({
-                            top: offsetPosition,
-                            behavior: 'smooth'
-                        });
+                        const targetId = this.getAttribute('href');
+                        const targetElement = document.querySelector(targetId);
                         
-                        // Add a subtle animation effect to the target
-                        targetElement.style.transition = 'all 0.3s ease-out';
-                        targetElement.style.transform = 'scale(1.01)';
-                        
-                        setTimeout(() => {
-                            targetElement.style.transform = 'scale(1)';
-                        }, 300);
-                    }
+                        if (targetElement) {
+                            // Calculate offset for better positioning
+                            const offset = 100;
+                            const elementPosition = targetElement.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - offset;
+                            
+                            // Smooth scroll with custom timing
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                            
+                            // Add a subtle animation effect to the target
+                            targetElement.style.transition = 'all 0.3s ease-out';
+                            targetElement.style.transform = 'scale(1.01)';
+                            
+                            setTimeout(() => {
+                                targetElement.style.transform = 'scale(1)';
+                            }, 300);
+                        }
+                    });
+                });
+                
+                // Intersection Observer for scroll animations
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                };
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                        }
+                    });
+                }, observerOptions);
+                
+                // Observe elements with animation class
+                document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                    observer.observe(el);
                 });
             });
-            
-            // Intersection Observer for scroll animations
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, observerOptions);
-            
-            // Observe elements with animation class
-            document.querySelectorAll('.animate-on-scroll').forEach(el => {
-                observer.observe(el);
-            });
-        });
-        </script>
+            </script>
     </body>
 </html>
