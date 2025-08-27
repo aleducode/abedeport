@@ -11,6 +11,7 @@
         <meta name="theme-color" content="#0d6efd">
         <meta name="MobileOptimized" content="width">
         <meta name="handheldFriendly" content="true">
+        <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <!-- favicon icon -->
@@ -189,9 +190,7 @@
                         </a>
                     </div> 
                     <div class="col-xl-6 col-lg-6 align-self-end">
-                        <div class="position-absolute right-0px bottom-20px md-bottom-5 lg-w-65 md-w-100">
-                            <img src="https://via.placeholder.com/875x725" class="" alt="">
-                        </div>
+                        <!-- Hero image removed to avoid loading issues -->
                         <div class="outside-box-right-20 text-end position-relative z-index-9 animation-float">
                             <img src="assets/landing/images/landing.png" alt=""> 
                         </div>
@@ -274,7 +273,9 @@
                 </div>
                 <div class="row justify-content-center" data-anime='{ "el": "childs", "translateY": [30, 0], "opacity": [0,1], "duration": 600, "delay": 0, "staggervalue": 300, "easing": "easeOutQuad" }'>
                     <div class="col-auto text-center">
-                        <div class="d-inline-block"><img src="https://via.placeholder.com/60x50" alt=""></div>
+                        <div class="d-inline-block" style="width: 60px; height: 50px; background: #2563eb; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: white; font-weight: bold; font-size: 12px;">LOGO</span>
+                        </div>
                         <div class="d-inline-block text-dark-gray fs-22 alt-font fw-500">Más de <span class="fw-700">1000 personas</span> ya forman parte de nuestra comunidad deportiva.</div>
                     </div>
                 </div>
@@ -344,7 +345,9 @@
                         <h2 class="fw-700 alt-font text-dark-gray ls-minus-1px w-50 mb-10px lg-w-100">¿Tienes alguna <span class="text-highlight">pregunta?<span class="bg-base-color opacity-3 h-10px bottom-10px"></span></span></h2>
                         <div class="row align-items-center g-0">
                             <div class="w-100 sm-mt-5px d-flex align-items-center justify-content-center justify-content-lg-start">
-                                <img src="https://via.placeholder.com/156x113" alt="">
+                                <div style="width: 156px; height: 113px; background: linear-gradient(45deg, #2563eb, #3b82f6); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: white; font-weight: bold;">Soporte</span>
+                                </div>
                                 <span class="alt-font fw-500 lh-26 fs-18 position-relative text-start">Ejecutivo de soporte <span class="fw-700 text-dark-gray d-block">1000+ satisfechos.</span></span>
                             </div>
                         </div>

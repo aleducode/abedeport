@@ -83,4 +83,6 @@ services:
     depends_on:
       - db
     networks:
-      - abedeport-network 
+      - abedeport-network
+
+ 
