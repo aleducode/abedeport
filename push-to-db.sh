@@ -26,16 +26,16 @@ case $ENVIRONMENT in
         echo ""
         
         # Check if local database is running
-        if ! docker-compose -f local.yml ps db | grep -q "Up"; then
+        if ! sudo docker-compose -f local.yml ps db | grep -q "Up"; then
             echo "🚀 Starting local database..."
-            docker-compose -f local.yml up -d db
+            sudo docker-compose -f local.yml up -d db
             
             echo "⏳ Waiting for database to be ready..."
             sleep 10
         fi
         
         echo "💾 Importing tournament data..."
-        docker-compose -f local.yml exec -T db mysql -u abedeport_user -pabedeport_local_password ABEDEPORT < tournaments_data.sql
+        sudo docker-compose -f local.yml exec -T db mysql -u abedeport_user -pabedeport_local_password ABEDEPORT < tournaments_data.sql
         
         if [ $? -eq 0 ]; then
             echo ""
@@ -71,13 +71,13 @@ case $ENVIRONMENT in
         echo ""
         
         # Check if production database is running
-        if ! docker-compose -f production.yml ps db | grep -q "Up"; then
+        if ! sudo docker-compose -f production.yml ps db | grep -q "Up"; then
             echo "🚀 Starting production database..."
-            docker-compose -f production.yml up -d db
+            sudo docker-compose -f production.yml up -d db
             
             echo "⏳ Waiting for production database to be ready..."
             for i in {1..30}; do
-                if docker-compose -f production.yml exec -T db mysqladmin ping -h localhost -u root -p$MYSQL_ROOT_PASSWORD > /dev/null 2>&1; then
+                if sudo docker-compose -f production.yml exec -T db mysqladmin ping -h localhost -u root -p$MYSQL_ROOT_PASSWORD > /dev/null 2>&1; then
                     echo "✅ Production database is ready!"
                     break
                 fi
@@ -92,7 +92,7 @@ case $ENVIRONMENT in
         fi
         
         echo "💾 Importing tournament data to production..."
-        docker-compose -f production.yml exec -T db mysql -u abedeport_user -p$DB_PASSWORD ABEDEPORT < tournaments_data.sql
+        sudo docker-compose -f production.yml exec -T db mysql -u abedeport_user -p$DB_PASSWORD ABEDEPORT < tournaments_data.sql
         
         if [ $? -eq 0 ]; then
             echo ""
