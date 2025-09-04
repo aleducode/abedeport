@@ -12,6 +12,8 @@ services:
       - ./admin:/var/www/html/admin
       - ./assets:/var/www/html/assets
       - ./noticias:/var/www/html/noticias
+      - ./ejercicio:/var/www/html/ejercicio
+      - ./video:/var/www/html/video
       - ./index.html:/var/www/html/index.html
       - ./robots.txt:/var/www/html/robots.txt
       - ./sitemap.xml:/var/www/html/sitemap.xml

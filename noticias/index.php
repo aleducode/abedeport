@@ -322,156 +322,63 @@ $current_tournament = !empty($active_tournaments) ? $active_tournaments[0] : nul
 						<!-- Main Navigation -->
 						<nav class="main-nav">
 							<ul class="main-nav__list">
-								<li class="active"><a href="/">Inicio</a>
-									<ul class="main-nav__sub">
-										<li class="active"><a href="/">Portada Principal</a></li>
-										<li class=""><a href="_esports_index-2.html">Portada Alternativa</a></li>
-									</ul>
-								</li>
-								<li class=""><a href="#">Noticias</a>
+								<li class=""><a href="../noticias">Inicio</a></li>
+								<li class=""><a href="#">Ejercicios</a>
 									<!-- Mega Menu -->
 									<div class="main-nav__megamenu">
 										<div class="row">
 											<div class="col-12">
-												<!-- Widget: Latest Posts / End -->
+												<!-- Widget: Featured Videos -->
 												<div class="widget widget--megamenu widget-latest-posts">
 													<div class="widget__content">
 														<ul class="posts posts--simple-list posts-layout-horizontal posts-layout-horizontal--3cols">
-															<li class="posts__item posts__item--category-4 ">
+															<li class="posts__item posts__item--category-1">
 																<figure class="posts__thumb posts__thumb--hover">
-																	<a href="#"><img src="assets/images/esports/samples/nav-post-img-1.jpg" alt=""></a>
+																	<a href="/ejercicio"><img src="../noticias/assets/images/samples/nav-post-img-1.jpg" alt=""></a>
 																</figure>
 																<div class="posts__inner">
 																	<div class="posts__cat">
-																		<span class="label posts__cat-label posts__cat-label--category-4">Fútbol Premier</span>
+																		<span class="label posts__cat-label posts__cat-label--category-1">Rutinas</span>
 																	</div>
-																	<h6 class="posts__title posts__title--color-hover"><a href="_esports_blog-post-1.html">El Real Madrid se prepara para el clásico del fin de semana</a></h6>
-																	<time datetime="2017-08-21" class="posts__date">August 27th, 2018</time>
+																	<h6 class="posts__title posts__title--color-hover"><a href="/ejercicio">Rutina matutina de 15 minutos para principiantes</a></h6>
+																	<time datetime="2024-09-01" class="posts__date">1 de Septiembre, 2024</time>
 																</div>
 															</li>
-															<li class="posts__item posts__item--category-2 ">
+															<li class="posts__item posts__item--category-2">
 																<figure class="posts__thumb posts__thumb--hover">
-																	<a href="#"><img src="assets/images/esports/samples/nav-post-img-2.jpg" alt=""></a>
+																	<a href="/ejercicio"><img src="../noticias/assets/images/samples/nav-post-img-2.jpg" alt=""></a>
 																</figure>
 																<div class="posts__inner">
 																	<div class="posts__cat">
-																		<span class="label posts__cat-label posts__cat-label--category-2">Liga Profesional</span>
+																		<span class="label posts__cat-label posts__cat-label--category-2">Cardio</span>
 																	</div>
-																	<h6 class="posts__title posts__title--color-hover"><a href="_esports_blog-post-1.html">Nuevo fichaje estrella llega al Barcelona</a></h6>
-																	<time datetime="2017-08-21" class="posts__date">July 16th, 2018</time>
+																	<h6 class="posts__title posts__title--color-hover"><a href="/ejercicio">Entrenamiento HIIT de 20 minutos</a></h6>
+																	<time datetime="2024-09-02" class="posts__date">2 de Septiembre, 2024</time>
 																</div>
 															</li>
-															<li class="posts__item posts__item--category-3 ">
+															<li class="posts__item posts__item--category-3">
 																<figure class="posts__thumb posts__thumb--hover">
-																	<a href="#"><img src="assets/images/esports/samples/nav-post-img-3.jpg" alt=""></a>
+																	<a href="/ejercicio"><img src="../noticias/assets/images/samples/nav-post-img-3.jpg" alt=""></a>
 																</figure>
 																<div class="posts__inner">
 																	<div class="posts__cat">
-																		<span class="label posts__cat-label posts__cat-label--category-3">Fútbol Liga</span>
+																		<span class="label posts__cat-label posts__cat-label--category-3">Fuerza</span>
 																	</div>
-																	<h6 class="posts__title posts__title--color-hover"><a href="_esports_blog-post-1.html">Liga Española anuncia nuevas reglas para la próxima temporada</a></h6>
-																	<time datetime="2017-08-21" class="posts__date">June 12th, 2018</time>
+																	<h6 class="posts__title posts__title--color-hover"><a href="/ejercicio">Entrenamiento de fuerza con peso corporal</a></h6>
+																	<time datetime="2024-09-03" class="posts__date">3 de Septiembre, 2024</time>
 																</div>
 															</li>
 														</ul>
 													</div>
 												</div>
-												<!-- Widget: Latest Posts / End -->
+												<!-- Widget: Featured Videos / End -->
 											</div>
 											<div class="w-100"></div>
-											<ul class="col-lg-5 col-md-3 col-12 main-nav__ul main-nav__ul-3cols">
-												<li class="main-nav__title">Main Features</li>
-												<li><a href="_esports_features-shortcodes.html">Shortcodes</a></li>
-												<li><a href="_esports_features-widgets-blog.html">Widgets - Blog</a></li>
-												<li><a href="/">Home V1</a></li>
-												<li><a href="_esports_features-typography.html">Typography</a></li>
-												<li><a href="_esports_features-widgets-sports.html">Widgets - eSports</a></li>
-												<li><a href="_esports_index-2.html">Home V2</a></li>
-												<li><a href="_esports_features-404.html">404 Error</a></li>
-												<li></li>
-												<li><a href="_esports_features-search-results.html">Search Results</a></li>
-											</ul>
-											<ul class="col-lg-3 col-md-3 col-12 main-nav__ul main-nav__ul-2cols">
-												<li class="main-nav__title">Blog Pages</li>
-												<li><a href="_esports_blog-1.html">News Page V1</a></li>
-												<li><a href="_esports_blog-post-1.html">Post Page V1</a></li>
-												<li><a href="_esports_blog-2.html">News Page V2</a></li>
-												<li><a href="_esports_blog-post-2.html">Post Page V2</a></li>
-												<li><a href="_esports_blog-3.html">News Page V3</a></li>
-												<li><a href="_esports_blog-post-3.html">Post Page V3</a></li>
-												<li><a href="_esports_blog-4.html">News Page V4</a></li>
-											</ul>
-											<ul class="col-lg-2 col-md-3 col-12 main-nav__ul">
-												<li class="main-nav__title">Other Pages</li>
-												<li><a href="_esports_page-sponsors.html">Sponsors</a></li>
-												<li><a href="_esports_page-faqs.html">FAQs</a></li>
-												<li><a href="_esports_page-contacts.html">Contacts</a></li>
-												<li><a href="_esports_features-404.html">404 Error</a></li>
-											</ul>
-											<ul class="col-lg-2 col-md-3 col-12 main-nav__ul">
-												<li class="main-nav__title">Headers</li>
-												<li><a href="_esports_features-typography.html">Header V1</a></li>
-												<li><a href="_esports_features-shortcodes.html">Header V2</a></li>
-											</ul>
+								
 										</div>
 									</div>
 									<!-- Mega Menu / End -->
 								</li>
-								<li class=""><a href="_esports_team-overview.html">Deportes</a>
-									<!-- Mega Menu -->
-									<div class="main-nav__megamenu main-nav__megamenu--no-paddings ">
-										<div class="row">
-											<ul class="col-lg-4 col-md-4 col-12 main-nav__ul main-nav__ul-2cols">
-												<li class="main-nav__title main-nav-banner  main-nav-banner--img-1">
-													<a href="#" class="main-nav-banner__link">
-														<span class="main-nav-banner__subtitle">Club Deportivo.X</span>
-														<span class="main-nav-banner__title">Fútbol Premier</span>
-													</a>
-												</li>
-												<li><a href="_esports_event-overview-1a.html">Event Overview v1-A</a></li>
-												<li><a href="_esports_event-overview-1b.html">Event Overview v1-B</a></li>
-												<li><a href="_esports_event-overview-1c.html">Event Overview v1-C</a></li>
-												<li><a href="_esports_event-overview-2.html">Event Overview v2</a></li>
-												<li><a href="_esports_event-overview-3.html">Event Overview v3</a></li>
-												<li><a href="_esports_event-calendar.html">Events Calendar</a></li>
-												<li><a href="_esports_event-tournament.html">Tournaments Page</a></li>
-											</ul>
-											<ul class="col-lg-4 col-md-4 col-12 main-nav__ul main-nav__ul-2cols">
-												<li class="main-nav__title main-nav-banner  main-nav-banner--img-2">
-													<a href="#" class="main-nav-banner__link">
-														<span class="main-nav-banner__subtitle">Club Deportivo.GO</span>
-														<span class="main-nav-banner__title">Fútbol Liga</span>
-													</a>
-												</li>
-												<li><a href="_esports_team-video-single.html">Single Video</a></li>
-												<li><a href="_esports_team-player.html">Player Page</a></li>
-												<li><a href="_esports_team-overview.html">Single Team Page</a></li>
-												<li><a href="_esports_blog-post-1.html">Single Post Page</a></li>
-												<li><a href="_esports_event-overview-3.html">Single Event</a></li>
-												<li><a href="_esports_team-gallery-album.html">Single Album</a></li>
-											</ul>
-											<ul class="col-lg-4 col-md-4 col-12 main-nav__ul main-nav__ul-2cols">
-												<li class="main-nav__title main-nav-banner  main-nav-banner--img-3">
-													<a href="#" class="main-nav-banner__link">
-														<span class="main-nav-banner__subtitle">Club Deportivo LOH</span>
-														<span class="main-nav-banner__title">Liga de Campeones</span>
-													</a>
-												</li>
-												<li><a href="_esports_team-overview.html">Team Overview</a></li>
-												<li><a href="_esports_team-roster.html">Team Roster</a></li>
-												<li><a href="_esports_team-standings.html">Team Standings</a></li>
-												<li><a href="_esports_team-last-results.html">Latest Results</a></li>
-												<li><a href="_esports_team-schedule.html">Next Matches</a></li>
-												<li><a href="_esports_team-gallery.html">Team Gallery</a></li>
-												<li><a href="_esports_team-gallery-album.html">Team Album</a></li>
-												<li><a href="_esports_team-videos.html">Team Videos</a></li>
-											</ul>
-										</div>
-									</div>
-									<!-- Mega Menu / End -->
-								</li>
-						
-						
 							</ul>
 						</nav>
 						<!-- Main Navigation / End -->
