@@ -120,3 +120,11 @@ fabric.properties
 
 # Blog images directory
 admin/blog_images/
+
+# Video files - too large for Git
+video/
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
