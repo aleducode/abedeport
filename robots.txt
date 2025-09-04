@@ -1,0 +1,32 @@
+User-agent: *
+Allow: /
+
+# Allow access to CSS and JS files for proper rendering
+Allow: /assets/
+Allow: /noticias/assets/
+
+# Block admin areas from indexing
+Disallow: /admin/
+Disallow: /noticias/login.php
+Disallow: /noticias/register.php
+Disallow: /noticias/account.php
+Disallow: /noticias/forgotpass.php
+Disallow: /noticias/resetpass.php
+
+# Block backup and config files
+Disallow: /backup-scripts/
+Disallow: /commands/
+Disallow: /compose/
+Disallow: /database/
+Disallow: /deployment/
+Disallow: *.yml
+Disallow: *.sh
+Disallow: *.sql
+Disallow: *.py
+Disallow: *.md
+
+# Sitemap location
+Sitemap: https://abedeport.abejorralmuchopueblo.com/sitemap.xml
+
+# Crawl delay (optional - helps prevent server overload)
+Crawl-delay: 1

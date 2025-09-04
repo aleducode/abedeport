@@ -13,6 +13,9 @@ services:
       - ./assets:/var/www/html/assets
       - ./noticias:/var/www/html/noticias
       - ./index.html:/var/www/html/index.html
+      - ./robots.txt:/var/www/html/robots.txt
+      - ./sitemap.xml:/var/www/html/sitemap.xml
+      - ./google83537595194d7e9f.html:/var/www/html/google83537595194d7e9f.html
       - ./check_db.php:/var/www/html/check_db.php
       - ./install_blog.php:/var/www/html/install_blog.php
       - ./test_encoding.php:/var/www/html/test_encoding.php
