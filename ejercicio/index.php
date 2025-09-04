@@ -311,7 +311,7 @@
 									<span class="label posts__cat-label posts__cat-label--category-4">Principiante</span>
 								</div>
 								<header class="post__header">
-									<h2 class="post__title">Rutina básica de ejercicios para comenzar tu día con energía</h2>
+									<h2 class="post__title">Rutina de Ejercicios de Brazo - Fortalecimiento y Tonificación</h2>
 									<ul class="post__meta meta">
 										<li class="meta__item meta__item--date"><time datetime="2024-09-01">1 de Septiembre, 2024</time></li>
 										<li class="meta__item meta__item--views">1245</li>
@@ -324,10 +324,9 @@
 								<!-- Video Player -->
 								<div class="video-container mb-3">
 									<video width="100%" height="300" controls preload="metadata">
-										<source src="../video/Mancuernas.mov" type="video/quicktime">
-										<source src="../video/Mancuernas.mp4" type="video/mp4">
+										<source src="../video/Brazo.mp4" type="video/mp4">
 										Tu navegador no soporta el elemento de video HTML5.
-										<p>Si no puedes ver el video, <a href="../video/Mancuernas.mov" download>descárgalo aquí</a>.</p>
+										<p>Si no puedes ver el video, <a href="../video/Brazo.mp4" download>descárgalo aquí</a>.</p>
 									</video>
 								</div>
 							</div>
@@ -344,7 +343,7 @@
 									<span class="label posts__cat-label posts__cat-label--category-3">Intermedio</span>
 								</div>
 								<header class="post__header">
-									<h2 class="post__title">Entrenamiento HIIT de 20 minutos para quemar calorías</h2>
+									<h2 class="post__title">Cardio Intensivo 1 - Quema Grasa y Mejora tu Resistencia</h2>
 									<ul class="post__meta meta">
 										<li class="meta__item meta__item--date"><time datetime="2024-09-02">2 de Septiembre, 2024</time></li>
 										<li class="meta__item meta__item--views">2156</li>
@@ -357,10 +356,9 @@
 								<!-- Video Player -->
 								<div class="video-container mb-3">
 									<video width="100%" height="300" controls preload="metadata">
-										<source src="../video/Pierna.mov" type="video/quicktime">
-										<source src="../video/Pierna.mp4" type="video/mp4">
+										<source src="../video/Cardio%201.mp4" type="video/mp4">
 										Tu navegador no soporta el elemento de video HTML5.
-										<p>Si no puedes ver el video, <a href="../video/Pierna.mov" download>descárgalo aquí</a>.</p>
+										<p>Si no puedes ver el video, <a href="../video/Cardio%201.mp4" download>descárgalo aquí</a>.</p>
 									</video>
 								</div>
 							</div>
@@ -377,7 +375,7 @@
 									<span class="label posts__cat-label posts__cat-label--category-3">Avanzado</span>
 								</div>
 								<header class="post__header">
-									<h2 class="post__title">Entrenamiento de fuerza con peso corporal</h2>
+									<h2 class="post__title">Rutina de Mancuernas - Entrenamiento de Fuerza Completo</h2>
 									<ul class="post__meta meta">
 										<li class="meta__item meta__item--date"><time datetime="2024-09-03">3 de Septiembre, 2024</time></li>
 										<li class="meta__item meta__item--views">1687</li>
@@ -390,13 +388,9 @@
 								<!-- Video Player -->
 								<div class="video-container mb-3">
 									<video width="100%" height="300" controls preload="metadata">
-										<source src="../video/Mancuernas.mov" type="video/quicktime">
 										<source src="../video/Mancuernas.mp4" type="video/mp4">
-										<div class="video-fallback">
-											<p><strong>Video no disponible</strong></p>
-											<p>Tu navegador no soporta este formato de video.</p>
-											<a href="../video/Mancuernas.mov" download>Descargar video</a>
-										</div>
+										Tu navegador no soporta el elemento de video HTML5.
+										<p>Si no puedes ver el video, <a href="../video/Mancuernas.mp4" download>descárgalo aquí</a>.</p>
 									</video>
 								</div>
 							</div>
@@ -409,11 +403,11 @@
 						<article class="card post post--single post--single-sm h-100">
 							<div class="card__header card__header--no-highlight flex-column align-items-start">
 								<div class="post__category">
-									<span class="label posts__cat-label posts__cat-label--category-2">Yoga</span>
-									<span class="label posts__cat-label posts__cat-label--category-1">Relajación</span>
+									<span class="label posts__cat-label posts__cat-label--category-1">Fuerza</span>
+									<span class="label posts__cat-label posts__cat-label--category-3">Intermedio</span>
 								</div>
 								<header class="post__header">
-									<h2 class="post__title">Sesión de yoga matutina para despertar el cuerpo</h2>
+									<h2 class="post__title">Rutina de Ejercicios de Piernas - Fortalecimiento y Potencia</h2>
 									<ul class="post__meta meta">
 										<li class="meta__item meta__item--date"><time datetime="2024-09-04">4 de Septiembre, 2024</time></li>
 										<li class="meta__item meta__item--views">856</li>
@@ -426,16 +420,47 @@
 								<!-- Video Player -->
 								<div class="video-container mb-3">
 									<video width="100%" height="300" controls preload="metadata">
-										<source src="../video/Pierna.mov" type="video/quicktime">
 										<source src="../video/Pierna.mp4" type="video/mp4">
 										Tu navegador no soporta el elemento de video HTML5.
-										<p>Si no puedes ver el video, <a href="../video/Pierna.mov" download>descárgalo aquí</a>.</p>
+										<p>Si no puedes ver el video, <a href="../video/Pierna.mp4" download>descárgalo aquí</a>.</p>
 									</video>
 								</div>
 							</div>
 						</article>
 					</div>
 					<!-- Exercise Video 4 / End -->
+					
+					<!-- Exercise Video 5 -->
+					<div class="col-lg-6 col-md-6 col-12 mb-4">
+						<article class="card post post--single post--single-sm h-100">
+							<div class="card__header card__header--no-highlight flex-column align-items-start">
+								<div class="post__category">
+									<span class="label posts__cat-label posts__cat-label--category-2">Cardio</span>
+									<span class="label posts__cat-label posts__cat-label--category-3">Avanzado</span>
+								</div>
+								<header class="post__header">
+									<h2 class="post__title">Cardio Intensivo 3 - Entrenamiento Extremo de Resistencia</h2>
+									<ul class="post__meta meta">
+										<li class="meta__item meta__item--date"><time datetime="2024-09-05">5 de Septiembre, 2024</time></li>
+										<li class="meta__item meta__item--views">1543</li>
+										<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> 112</a></li>
+										<li class="meta__item meta__item--comments"><a href="#">28</a></li>
+									</ul>
+								</header>
+							</div>
+							<div class="card__content">
+								<!-- Video Player -->
+								<div class="video-container mb-3">
+									<video width="100%" height="300" controls preload="metadata">
+										<source src="../video/Cardio%203.mp4" type="video/mp4">
+										Tu navegador no soporta el elemento de video HTML5.
+										<p>Si no puedes ver el video, <a href="../video/Cardio%203.mp4" download>descárgalo aquí</a>.</p>
+									</video>
+								</div>
+							</div>
+						</article>
+					</div>
+					<!-- Exercise Video 5 / End -->
 					
 				</div>
 				<!-- Exercise Videos List / End -->
