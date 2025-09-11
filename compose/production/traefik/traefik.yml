@@ -24,16 +24,31 @@ certificatesResolvers:
 http:
   routers:
 
-    # Main application router
+    # Static assets with long cache (JS, CSS, fonts, images)
+    static-assets-router:
+      rule: "Host(`abedeport.abejorralmuchopueblo.com`) && PathPrefix(`/assets/`)"
+      entryPoints:
+        - websecure
+      middlewares:
+        - security-headers
+        - cache-headers
+      service: abedeport-app
+      tls:
+        certResolver: letsencrypt
+      priority: 100
+
+    # Main application router (lower priority)
     web-router:
       rule: "Host(`abedeport.abejorralmuchopueblo.com`)"
       entryPoints:
         - websecure
       middlewares:
         - security-headers
+        - cache-short
       service: abedeport-app
       tls:
         certResolver: letsencrypt
+      priority: 50
 
     # phpMyAdmin router
     phpmyadmin-router:
@@ -58,10 +73,20 @@ http:
         customRequestHeaders:
           X-Forwarded-Proto: "https"
         customResponseHeaders:
-          X-Robots-Tag: "noindex,nofollow,nosnippet,noarchive"
+          X-Robots-Tag: "index,follow"
         stsSeconds: 31536000
         stsIncludeSubdomains: true
         stsPreload: true
+    
+    cache-headers:
+      headers:
+        customResponseHeaders:
+          Cache-Control: "public, max-age=31536000, immutable"
+          
+    cache-short:
+      headers:
+        customResponseHeaders:
+          Cache-Control: "public, max-age=86400"
 
   services:
     abedeport-app:
