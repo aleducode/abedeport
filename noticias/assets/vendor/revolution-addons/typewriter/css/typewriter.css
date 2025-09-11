@@ -1,0 +1,44 @@
+/* Revolution Slider Typewriter Addon CSS */
+.tp-typewriter {
+    position: relative;
+    display: inline-block;
+}
+
+.tp-typewriter-cursor {
+    display: inline-block;
+    background: currentColor;
+    width: 2px;
+    animation: tp-typewriter-blink 1s infinite;
+}
+
+.tp-typewriter-cursor.tp-typewriter-cursor-hidden {
+    opacity: 0;
+}
+
+@keyframes tp-typewriter-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.tp-typewriter-word {
+    display: inline-block;
+}
+
+.tp-typewriter-line {
+    display: block;
+}
+
+/* Typewriter cursor variations */
+.tp-typewriter-cursor-block {
+    width: 0.8em;
+    height: 1em;
+    background: currentColor;
+}
+
+.tp-typewriter-cursor-underline {
+    width: 1em;
+    height: 2px;
+    background: currentColor;
+    position: relative;
+    top: 0.8em;
+}

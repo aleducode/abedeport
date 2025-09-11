@@ -1,0 +1,27 @@
+/* Revolution Slider Revealer Preloaders CSS */
+.rsaddon-revealer-preloader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.rsaddon-revealer-preloader-inner {
+    text-align: center;
+    color: white;
+}
+
+.rsaddon-revealer-spinner {
+    margin: 0 auto 20px;
+}
+
+.rsaddon-revealer-text {
+    font-size: 14px;
+    opacity: 0.8;
+}

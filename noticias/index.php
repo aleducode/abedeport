@@ -1034,7 +1034,6 @@ $current_tournament = !empty($active_tournaments) ? $active_tournaments[0] : nul
 	<script src="assets/js/core.js"></script>
 	
 	<!-- Vendor JS -->
-	<script src="assets/vendor/twitter/jquery.twitter.js"></script>
 	
 	<!-- REVEAL ADD-ON FILES -->
 	<script type='text/javascript' src='assets/vendor/revolution-addons/reveal/js/revolution.addon.revealer.min.js?ver=1.0.0'></script>

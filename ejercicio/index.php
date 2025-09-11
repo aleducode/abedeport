@@ -159,16 +159,7 @@
 			
 						<!-- Account Navigation -->
 						<ul class="nav-account">
-							<li class="nav-account__item"><a href="#">Idioma: <span class="highlight">ES</span></a>
-								<ul class="main-nav__sub">
-									<li><a href="#">Español</a></li>
-									<li><a href="#">English</a></li>
-									<li><a href="#">Français</a></li>
-								</ul>
-							</li>
-							<li class="nav-account__item"><a href="../admin/">Tu Cuenta</a></li>
-							<li class="nav-account__item nav-account__item--logout"><a href="../admin/login.php">Iniciar Sesión</a></li>
-						</ul>
+		
 						<!-- Account Navigation / End -->
 					</div>
 				</div>
@@ -484,7 +475,6 @@
 	<script src="../noticias/assets/js/core.js"></script>
 	
 	<!-- Vendor JS -->
-	<script src="../noticias/assets/vendor/twitter/jquery.twitter.js"></script>
 	
 	<!-- Template JS -->
 	<script src="../noticias/assets/js/init.js"></script>
