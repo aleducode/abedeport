@@ -15,6 +15,7 @@ services:
       - ./ejercicio:/var/www/html/ejercicio
       - ./video:/var/www/html/video
       - ./index.html:/var/www/html/index.html
+      - ./.htaccess:/var/www/html/.htaccess
       - ./robots.txt:/var/www/html/robots.txt
       - ./sitemap.xml:/var/www/html/sitemap.xml
       - ./google83537595194d7e9f.html:/var/www/html/google83537595194d7e9f.html
