@@ -44,15 +44,34 @@
         <!-- google fonts preconnect with font-display optimization -->
         <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <!-- Load Google Fonts with font-display: swap (consolidated) -->
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'; this.onload=null;">
+        <!-- fallback for no-js -->
+        <noscript>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+        </noscript>
         <!-- preload LCP image -->
         <link rel="preload" as="image" href="assets/landing/images/landing.webp" type="image/webp">
         <link rel="preload" as="image" href="assets/landing/images/landing.png" type="image/png">
-        <!-- style sheets and font icons  -->
+        <!-- preload critical CSS files -->
+        <link rel="preload" as="style" href="assets/landing/css/vendors.min.css"/>
+        <link rel="preload" as="style" href="assets/landing/css/style.css"/>
+        
+        <!-- critical CSS loaded normally -->
         <link rel="stylesheet" href="assets/landing/css/vendors.min.css"/>
-        <link rel="stylesheet" href="assets/landing/css/icon.min.css"/>
         <link rel="stylesheet" href="assets/landing/css/style.css"/>
-        <link rel="stylesheet" href="assets/landing/css/responsive.css"/>
-        <link rel="stylesheet" href="assets/landing/css/data-analysis.css" />
+        
+        <!-- non-critical CSS loaded asynchronously -->
+        <link rel="stylesheet" href="assets/landing/css/icon.min.css" media="print" onload="this.media='all'; this.onload=null;"/>
+        <link rel="stylesheet" href="assets/landing/css/responsive.css" media="print" onload="this.media='all'; this.onload=null;"/>
+        <link rel="stylesheet" href="assets/landing/css/data-analysis.css" media="print" onload="this.media='all'; this.onload=null;"/>
+        
+        <!-- fallback for no-js -->
+        <noscript>
+            <link rel="stylesheet" href="assets/landing/css/icon.min.css"/>
+            <link rel="stylesheet" href="assets/landing/css/responsive.css"/>
+            <link rel="stylesheet" href="assets/landing/css/data-analysis.css"/>
+        </noscript>
         <style>
             /* Custom mobile styles for logo */
             @media (max-width: 767px) {
