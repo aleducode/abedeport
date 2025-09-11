@@ -386,12 +386,13 @@ $current_tournament = !empty($active_tournaments) ? $active_tournaments[0] : nul
 						<div class="header__primary-spacer"></div>
 		
 						<!-- Header Search Form -->
-						<div class="header-search-form ">
-							<form action="#" id="mobile-search-form" class="search-form">
-								<input type="text" class="form-control header-mobile__search-control" value="" placeholder="Enter your search here...">
-								<button type="submit" class="header-mobile__search-submit"><i class="fas fa-search"></i></button>
-							</form>
-						</div>
+					<div class="header-search-form ">
+						<form action="#" id="news-search-form" class="search-form">
+							<input type="text" id="news-search-input" class="form-control header-mobile__search-control" value="" placeholder="Buscar noticias...">
+							<button type="button" id="search-btn" class="header-mobile__search-submit"><i class="fas fa-search"></i></button>
+							<button type="button" id="clear-search-btn" class="header-mobile__search-clear" style="display: none;"><i class="fas fa-times"></i></button>
+						</form>
+					</div>
 						<!-- Header Search Form / End -->
 		
 		
@@ -732,8 +733,25 @@ $current_tournament = !empty($active_tournaments) ? $active_tournaments[0] : nul
 					<div class="content col-lg-8">
 		
 						<!-- Posts Area #1 -->
+						<!-- Search Results Info -->
+						<div id="search-results-info" class="search-results-info" style="display: none;">
+							<div class="alert alert-info">
+								<span id="search-results-text"></span>
+								<button type="button" id="clear-search-results" class="btn btn-sm btn-outline-primary ms-2">Limpiar búsqueda</button>
+							</div>
+						</div>
+
+						<!-- No Results Message -->
+						<div id="no-results-message" class="no-results-message" style="display: none;">
+							<div class="alert alert-warning text-center">
+								<i class="fas fa-search fa-3x mb-3 text-muted"></i>
+								<h4>No se encontraron resultados</h4>
+								<p>No hay noticias que coincidan con tu búsqueda. Intenta con otros términos.</p>
+							</div>
+						</div>
+
 						<!-- Posts Grid -->
-						<div class="posts posts--cards post-grid post-grid--2cols row">
+						<div class="posts posts--cards post-grid post-grid--2cols row" id="news-grid">
 		
 							<?php if (!empty($latestNews)): ?>
 								<?php foreach ($latestNews as $index => $post): ?>
@@ -755,7 +773,11 @@ $current_tournament = !empty($active_tournaments) ? $active_tournaments[0] : nul
 										// Get sport categories for this post
 										$categories = getSportCategories($post['etiquetas']);
 									?>
-									<div class="post-grid__item col-sm-6">
+									<div class="post-grid__item col-sm-6 news-card" 
+										 data-title="<?php echo htmlspecialchars(strtolower($post['titulo'])); ?>" 
+										 data-content="<?php echo htmlspecialchars(strtolower(strip_tags($post['contenido']))); ?>" 
+										 data-tags="<?php echo htmlspecialchars(strtolower($post['etiquetas'])); ?>" 
+										 data-author="<?php echo htmlspecialchars(strtolower($post['nombre'] . ' ' . $post['apellido'])); ?>">
 										<div class="posts__item posts__item--card posts__item--<?php echo $categories[0]['class']; ?> card">
 											<figure class="posts__thumb">
 												<div class="posts__cat">
@@ -1131,6 +1153,201 @@ $current_tournament = !empty($active_tournaments) ? $active_tournaments[0] : nul
 	<!-- Template JS -->
 	<script src="assets/js/init.js"></script>
 	<script src="assets/js/custom.js"></script>
+
+	<!-- News Search Functionality -->
+	<script>
+		(function() {
+			// Search elements
+			const searchInput = document.getElementById('news-search-input');
+			const searchBtn = document.getElementById('search-btn');
+			const clearSearchBtn = document.getElementById('clear-search-btn');
+			const clearResultsBtn = document.getElementById('clear-search-results');
+			const searchForm = document.getElementById('news-search-form');
+			const newsGrid = document.getElementById('news-grid');
+			const searchResultsInfo = document.getElementById('search-results-info');
+			const searchResultsText = document.getElementById('search-results-text');
+			const noResultsMessage = document.getElementById('no-results-message');
+			const newsCards = document.querySelectorAll('.news-card');
+
+			// Search state
+			let isSearching = false;
+
+			// Search function
+			function performSearch(query) {
+				query = query.toLowerCase().trim();
+				
+				if (query === '') {
+					clearSearch();
+					return;
+				}
+
+				isSearching = true;
+				let visibleCount = 0;
+
+				newsCards.forEach(card => {
+					const title = card.dataset.title || '';
+					const content = card.dataset.content || '';
+					const tags = card.dataset.tags || '';
+					const author = card.dataset.author || '';
+
+					// Check if query matches title, content, tags, or author
+					const matches = title.includes(query) || 
+								   content.includes(query) || 
+								   tags.includes(query) || 
+								   author.includes(query);
+
+					if (matches) {
+						card.style.display = 'block';
+						card.style.animation = 'fadeIn 0.3s ease-in';
+						visibleCount++;
+					} else {
+						card.style.display = 'none';
+					}
+				});
+
+				// Update search results info
+				updateSearchResults(query, visibleCount);
+				
+				// Show/hide clear button
+				clearSearchBtn.style.display = 'inline-block';
+			}
+
+			// Update search results display
+			function updateSearchResults(query, count) {
+				if (count > 0) {
+					searchResultsText.textContent = `Se encontraron ${count} resultado${count !== 1 ? 's' : ''} para "${query}"`;
+					searchResultsInfo.style.display = 'block';
+					noResultsMessage.style.display = 'none';
+				} else {
+					searchResultsInfo.style.display = 'none';
+					noResultsMessage.style.display = 'block';
+				}
+			}
+
+			// Clear search function
+			function clearSearch() {
+				isSearching = false;
+				searchInput.value = '';
+				
+				// Show all cards
+				newsCards.forEach(card => {
+					card.style.display = 'block';
+					card.style.animation = 'fadeIn 0.3s ease-in';
+				});
+
+				// Hide search UI elements
+				searchResultsInfo.style.display = 'none';
+				noResultsMessage.style.display = 'none';
+				clearSearchBtn.style.display = 'none';
+			}
+
+			// Real-time search as user types
+			let searchTimeout;
+			searchInput.addEventListener('input', function() {
+				clearTimeout(searchTimeout);
+				searchTimeout = setTimeout(() => {
+					performSearch(this.value);
+				}, 300); // Debounce for 300ms
+			});
+
+			// Search button click
+			searchBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				performSearch(searchInput.value);
+			});
+
+			// Clear search button
+			clearSearchBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				clearSearch();
+			});
+
+			// Clear results button
+			clearResultsBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				clearSearch();
+			});
+
+			// Form submission
+			searchForm.addEventListener('submit', function(e) {
+				e.preventDefault();
+				performSearch(searchInput.value);
+			});
+
+			// Keyboard shortcuts
+			document.addEventListener('keydown', function(e) {
+				// Ctrl/Cmd + K to focus search
+				if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+					e.preventDefault();
+					searchInput.focus();
+				}
+				
+				// Escape to clear search
+				if (e.key === 'Escape' && isSearching) {
+					clearSearch();
+				}
+			});
+
+			// Add CSS for animations
+			const style = document.createElement('style');
+			style.textContent = `
+				@keyframes fadeIn {
+					from { opacity: 0; transform: translateY(10px); }
+					to { opacity: 1; transform: translateY(0); }
+				}
+
+				.header-mobile__search-clear {
+					background: none;
+					border: none;
+					color: #666;
+					padding: 8px;
+					margin-left: 5px;
+					cursor: pointer;
+					border-radius: 4px;
+					transition: all 0.2s ease;
+				}
+
+				.header-mobile__search-clear:hover {
+					background: #f0f0f0;
+					color: #333;
+				}
+
+				.search-results-info {
+					margin-bottom: 20px;
+				}
+
+				.no-results-message {
+					margin-bottom: 40px;
+				}
+
+				.news-card {
+					transition: all 0.3s ease;
+				}
+
+				.search-form {
+					display: flex;
+					align-items: center;
+				}
+
+				/* Mobile responsive adjustments */
+				@media (max-width: 768px) {
+					.search-results-info .btn {
+						font-size: 12px;
+						padding: 4px 8px;
+					}
+				}
+			`;
+			document.head.appendChild(style);
+
+			// Initialize search on page load if there's a URL parameter
+			const urlParams = new URLSearchParams(window.location.search);
+			const searchQuery = urlParams.get('search');
+			if (searchQuery) {
+				searchInput.value = searchQuery;
+				performSearch(searchQuery);
+			}
+		})();
+	</script>
 
 </body>
 </html>

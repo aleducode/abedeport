@@ -207,7 +207,7 @@
 																	<div class="posts__cat">
 																		<span class="label posts__cat-label posts__cat-label--category-1">Rutinas</span>
 																	</div>
-																	<h6 class="posts__title posts__title--color-hover"><a href="video-single.html">Rutina matutina de 15 minutos para principiantes</a></h6>
+																	<h6 class="posts__title posts__title--color-hover"><a href="/ejercicio">Rutina matutina de 15 minutos para principiantes</a></h6>
 																	<time datetime="2024-09-01" class="posts__date">1 de Septiembre, 2024</time>
 																</div>
 															</li>
@@ -219,7 +219,7 @@
 																	<div class="posts__cat">
 																		<span class="label posts__cat-label posts__cat-label--category-2">Cardio</span>
 																	</div>
-																	<h6 class="posts__title posts__title--color-hover"><a href="video-single.html">Entrenamiento HIIT de 20 minutos</a></h6>
+																	<h6 class="posts__title posts__title--color-hover"><a href="/ejercicio">Entrenamiento HIIT de 20 minutos</a></h6>
 																	<time datetime="2024-09-02" class="posts__date">2 de Septiembre, 2024</time>
 																</div>
 															</li>
@@ -231,7 +231,7 @@
 																	<div class="posts__cat">
 																		<span class="label posts__cat-label posts__cat-label--category-3">Fuerza</span>
 																	</div>
-																	<h6 class="posts__title posts__title--color-hover"><a href="video-single.html">Entrenamiento de fuerza con peso corporal</a></h6>
+																	<h6 class="posts__title posts__title--color-hover"><a href="/ejercicio">Entrenamiento de fuerza con peso corporal</a></h6>
 																	<time datetime="2024-09-03" class="posts__date">3 de Septiembre, 2024</time>
 																</div>
 															</li>
