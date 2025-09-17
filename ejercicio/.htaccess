@@ -1,0 +1,20 @@
+# Ejercicio directory .htaccess
+DirectoryIndex index.php
+
+# Allow access to all files in this directory
+<Files "*">
+    Require all granted
+</Files>
+
+# Handle requests within ejercicio directory
+RewriteEngine On
+
+# If requesting the directory root, serve index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^$ index.php [L]
+
+# Handle other requests within the directory
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ $1 [L]

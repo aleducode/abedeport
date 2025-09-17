@@ -323,7 +323,7 @@ $current_tournament = !empty($active_tournaments) ? $active_tournaments[0] : nul
 						<nav class="main-nav">
 							<ul class="main-nav__list">
 								<li class=""><a href="../noticias">Inicio</a></li>
-								<li class=""><a href="#">Ejercicios</a>
+								<li class=""><a href="../ejercicio">Ejercicios</a>
 									<!-- Mega Menu -->
 									<div class="main-nav__megamenu">
 										<div class="row">
@@ -334,37 +334,37 @@ $current_tournament = !empty($active_tournaments) ? $active_tournaments[0] : nul
 														<ul class="posts posts--simple-list posts-layout-horizontal posts-layout-horizontal--3cols">
 															<li class="posts__item posts__item--category-1">
 																<figure class="posts__thumb posts__thumb--hover">
-																	<a href="/ejercicio"><img src="../noticias/assets/images/samples/nav-post-img-1.jpg" alt=""></a>
+																	<a href="../ejercicio"><img src="../noticias/assets/images/samples/nav-post-img-1.jpg" alt=""></a>
 																</figure>
 																<div class="posts__inner">
 																	<div class="posts__cat">
 																		<span class="label posts__cat-label posts__cat-label--category-1">Rutinas</span>
 																	</div>
-																	<h6 class="posts__title posts__title--color-hover"><a href="/ejercicio">Rutina matutina de 15 minutos para principiantes</a></h6>
+																	<h6 class="posts__title posts__title--color-hover"><a href="../ejercicio">Rutina matutina de 15 minutos para principiantes</a></h6>
 																	<time datetime="2024-09-01" class="posts__date">1 de Septiembre, 2024</time>
 																</div>
 															</li>
 															<li class="posts__item posts__item--category-2">
 																<figure class="posts__thumb posts__thumb--hover">
-																	<a href="/ejercicio"><img src="../noticias/assets/images/samples/nav-post-img-2.jpg" alt=""></a>
+																	<a href="../ejercicio"><img src="../noticias/assets/images/samples/nav-post-img-2.jpg" alt=""></a>
 																</figure>
 																<div class="posts__inner">
 																	<div class="posts__cat">
 																		<span class="label posts__cat-label posts__cat-label--category-2">Cardio</span>
 																	</div>
-																	<h6 class="posts__title posts__title--color-hover"><a href="/ejercicio">Entrenamiento HIIT de 20 minutos</a></h6>
+																	<h6 class="posts__title posts__title--color-hover"><a href="../ejercicio">Entrenamiento HIIT de 20 minutos</a></h6>
 																	<time datetime="2024-09-02" class="posts__date">2 de Septiembre, 2024</time>
 																</div>
 															</li>
 															<li class="posts__item posts__item--category-3">
 																<figure class="posts__thumb posts__thumb--hover">
-																	<a href="/ejercicio"><img src="../noticias/assets/images/samples/nav-post-img-3.jpg" alt=""></a>
+																	<a href="../ejercicio"><img src="../noticias/assets/images/samples/nav-post-img-3.jpg" alt=""></a>
 																</figure>
 																<div class="posts__inner">
 																	<div class="posts__cat">
 																		<span class="label posts__cat-label posts__cat-label--category-3">Fuerza</span>
 																	</div>
-																	<h6 class="posts__title posts__title--color-hover"><a href="/ejercicio">Entrenamiento de fuerza con peso corporal</a></h6>
+																	<h6 class="posts__title posts__title--color-hover"><a href="../ejercicio">Entrenamiento de fuerza con peso corporal</a></h6>
 																	<time datetime="2024-09-03" class="posts__date">3 de Septiembre, 2024</time>
 																</div>
 															</li>
@@ -374,7 +374,7 @@ $current_tournament = !empty($active_tournaments) ? $active_tournaments[0] : nul
 												<!-- Widget: Featured Videos / End -->
 											</div>
 											<div class="w-100"></div>
-								
+
 										</div>
 									</div>
 									<!-- Mega Menu / End -->

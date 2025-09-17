@@ -1,30 +1,34 @@
-#Activar motor de reescritura de url
-RewriteEngine on
-
-#Evitar listar los archivos de la carpeta
+RewriteEngine On
 Options All -Indexes
-
-# Handle root directory - serve index.html
 DirectoryIndex index.html index.php
 
-# Handle admin directory access - ensure admin routes work properly
-RewriteCond %{REQUEST_URI} ^/admin/?(.*)$
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^admin/?(.*)$ admin/$1 [L]
+# Directory exists - serve directly
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule . - [L]
 
-# Redirect /noticias to ejercicio/index.php
-RewriteRule ^noticias/?$ ejercicio/index.php [L]
+# File exists - serve directly
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule . - [L]
 
-# Handle ejercicio directory access - serve index.php for /ejercicio
+# Simple directory routing with existence check
+RewriteCond ejercicio/index.php -f
 RewriteRule ^ejercicio/?$ ejercicio/index.php [L]
-RewriteRule ^ejercicio/(.*)$ ejercicio/$1 [L]
 
-# If the request is not a file or directory, try to serve .php file
-RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond noticias/index.php -f
+RewriteRule ^noticias/?$ noticias/index.php [L]
+
+RewriteCond admin/index.php -f
+RewriteRule ^admin/?$ admin/index.php [L]
+
+# Handle subdirectory files
+RewriteRule ^ejercicio/(.+)$ ejercicio/$1 [L]
+RewriteRule ^noticias/(.+)$ noticias/$1 [L]
+RewriteRule ^admin/(.+)$ admin/$1 [L]
+
+# Fallback to router for unmatched requests
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule ^(.+)$ $1.php [L,QSA]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ router.php [L]
 
 # Cache optimization rules
 <IfModule mod_expires.c>

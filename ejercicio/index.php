@@ -180,7 +180,7 @@
 						<!-- Main Navigation -->
 						<nav class="main-nav">
 							<ul class="main-nav__list">
-								<li class=""><a href="../noticias">Inicio</a></li>
+								<li class=""><a href="../noticias/">Inicio</a></li>
 								<li class=""><a href="#">Ejercicios</a>
 									<!-- Mega Menu -->
 									<div class="main-nav__megamenu">

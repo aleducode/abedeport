@@ -37,6 +37,12 @@ RUN echo "display_errors = On" >> /usr/local/etc/php/conf.d/development.ini \
 # Set ServerName to suppress Apache warning
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
+# Configure Apache to allow .htaccess overrides
+RUN echo '<Directory /var/www/html>' >> /etc/apache2/apache2.conf \
+    && echo '    AllowOverride All' >> /etc/apache2/apache2.conf \
+    && echo '    Require all granted' >> /etc/apache2/apache2.conf \
+    && echo '</Directory>' >> /etc/apache2/apache2.conf
+
 # Expose port 80
 EXPOSE 80
 

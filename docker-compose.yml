@@ -22,6 +22,8 @@ services:
       - ./check_db.php:/var/www/html/check_db.php
       - ./install_blog.php:/var/www/html/install_blog.php
       - ./test_encoding.php:/var/www/html/test_encoding.php
+      - ./router.php:/var/www/html/router.php
+      - ./test-routing.php:/var/www/html/test-routing.php
     depends_on:
       - db
     environment:

@@ -18,6 +18,7 @@ services:
       - ./admin:/var/www/html/admin
       - ./assets:/var/www/html/assets
       - ./noticias:/var/www/html/noticias
+      - ./ejercicio:/var/www/html/ejercicio
       - ./index.html:/var/www/html/index.html
       - ./apache-config/000-default.conf:/etc/apache2/sites-available/000-default.conf
     depends_on:
