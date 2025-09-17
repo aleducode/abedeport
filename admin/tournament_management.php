@@ -1,6 +1,9 @@
 <?php
 include "conn.php";
 
+// Require admin authentication and authorization
+$data = requireAdmin();
+
 // Function to get all tournaments
 function getAllTournaments($conn) {
     try {

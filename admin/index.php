@@ -16,6 +16,11 @@ if (isset($_SESSION['usuario'])) {
     exit();
 }
 
+// Check for access denied error
+if (isset($_GET['error']) && $_GET['error'] == 'access_denied') {
+    $msg = array("Acceso denegado. Solo los administradores pueden acceder a esta área.", "danger");
+}
+
 if (isset($_POST['btnlogin'])) {
     $login = $conn->prepare("SELECT * FROM usuario WHERE correo = ?");
     $login->bindParam(1, $_POST['correo']);
@@ -24,10 +29,15 @@ if (isset($_POST['btnlogin'])) {
 
     if (is_array($result)) {
         if (password_verify($_POST['password'], $result['password'])) {
-            $_SESSION['usuario'] = $result['correo'];
-            $_SESSION['id_usuario'] = $result['id_usuario'];
-            header('Location: home');
-            exit();
+            // Check if user is admin
+            if (!isset($result['is_admin']) || $result['is_admin'] != 1) {
+                $msg = array("Acceso denegado. Solo los administradores pueden acceder a esta área.", "danger");
+            } else {
+                $_SESSION['usuario'] = $result['correo'];
+                $_SESSION['id_usuario'] = $result['id_usuario'];
+                header('Location: home');
+                exit();
+            }
         } else {
             $msg = array("Contraseña incorrecta", "warning");
         }
@@ -168,7 +178,7 @@ if (isset($_POST['btnlogin'])) {
                     </div>
 
                     <div class="text-center links-container">
-                        <p class="mb-0">¿No tienes una cuenta? <a href="reg_users" class="fw-semibold">Regístrate aquí</a></p>
+                        <p class="mb-0 text-muted small">Solo administradores autorizados</p>
                     </div>
                 </form>
             </div>

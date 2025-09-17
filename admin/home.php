@@ -1,15 +1,8 @@
-<?php 
+<?php
 include "conn.php";
-session_start();
 
-// verifica la sesión que se está iniciando
-if (isset($_SESSION['usuario'])) {
-    $search = $conn->prepare("SELECT * FROM usuario WHERE correo = ?");
-    $search->bindParam(1, $_SESSION['usuario']);
-    $search->execute();
-    $data = $search->fetch(PDO::FETCH_ASSOC);
-
-    if (is_array($data)) {
+// Require admin authentication and authorization
+$data = requireAdmin();
 
 ?>
 <!DOCTYPE html>
@@ -236,12 +229,6 @@ if (isset($_SESSION['usuario'])) {
     </footer>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <?php
-    }
-} else {
-    // Si no hay sesión iniciada, redirigir a la página de inicio de sesión
-    header("location: ./");
-}
-?>
+    <?php ?>
 </body>
 </html>

@@ -1,6 +1,9 @@
 <?php
 include "conn.php";
 
+// Require admin authentication and authorization
+$data = requireAdmin();
+
 // Predefined tags for blog posts
 function getPredefinedTags() {
     return [
