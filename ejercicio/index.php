@@ -141,20 +141,6 @@
 					<div class="header__top-bar-inner">
 			
 						<!-- Social Links -->
-						<ul class="social-links social-links--inline social-links--main-nav social-links--top-bar">
-							<li class="social-links__item">
-								<a href="#" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="Facebook"><i class="fab fa-facebook"></i></a>
-							</li>
-							<li class="social-links__item">
-								<a href="#" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="Twitter"><i class="fab fa-twitter"></i></a>
-							</li>
-							<li class="social-links__item">
-								<a href="#" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="Instagram"><i class="fab fa-instagram"></i></a>
-							</li>
-							<li class="social-links__item">
-								<a href="#" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="YouTube"><i class="fab fa-youtube"></i></a>
-							</li>
-						</ul>
 						<!-- Social Links / End -->
 			
 						<!-- Account Navigation -->

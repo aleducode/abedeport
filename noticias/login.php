@@ -69,17 +69,6 @@ if ($_POST) {
                 <div class="container">
                     <div class="header__top-bar-inner">
                         <!-- Social Links -->
-                        <ul class="social-links social-links--inline social-links--main-nav social-links--top-bar">
-                            <li class="social-links__item">
-                                <a href="#" class="social-links__link"><i class="fab fa-facebook"></i></a>
-                            </li>
-                            <li class="social-links__item">
-                                <a href="#" class="social-links__link"><i class="fab fa-twitter"></i></a>
-                            </li>
-                            <li class="social-links__item">
-                                <a href="#" class="social-links__link"><i class="fab fa-instagram"></i></a>
-                            </li>
-                        </ul>
 
                         <!-- Account Navigation -->
                         <ul class="nav-account">

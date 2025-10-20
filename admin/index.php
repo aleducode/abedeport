@@ -6,7 +6,7 @@ session_start();
 * Seguridad de la aplicación en el home
 
 */
-include 'conn.php';
+require_once 'conn.php';
 /*
 * Validar si el usuario ya se encuentra logueado
 * Si el usuario ya se encuentra logueado, redirigirlo a la página de home

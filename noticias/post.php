@@ -1,6 +1,11 @@
 <?php
 require_once '../admin/conn.php';
 
+// Check if database connection exists
+if (!$conn) {
+    die('Error: No se pudo conectar a la base de datos. Por favor, verifica la configuración.');
+}
+
 // Get slug from URL
 $slug = isset($_GET['slug']) ? $_GET['slug'] : '';
 
@@ -9,21 +14,39 @@ if (empty($slug)) {
     exit();
 }
 
-// Get post data
+// Get post data with likes and comments count
 try {
     $stmt = $conn->prepare("
-        SELECT bp.*, u.nombre, u.apellido 
-        FROM blog_posts bp 
-        JOIN usuario u ON bp.autor_id = u.id_usuario 
+        SELECT bp.*, u.nombre, u.apellido
+        FROM blog_posts bp
+        JOIN usuario u ON bp.autor_id = u.id_usuario
         WHERE bp.slug = ? AND bp.estado = 'publicado'
     ");
     $stmt->bindParam(1, $slug);
     $stmt->execute();
     $post = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if (!$post) {
         header('Location: ./');
         exit();
+    }
+
+    // Update like and comment counts if they're null (for existing posts)
+    if ($post['like_count'] === null || $post['comment_count'] === null) {
+        $update_stmt = $conn->prepare("
+            UPDATE blog_posts SET
+                like_count = (SELECT COUNT(*) FROM post_likes WHERE post_id = ?),
+                comment_count = (SELECT COUNT(*) FROM post_comments WHERE post_id = ? AND estado = 'activo')
+            WHERE id_post = ?
+        ");
+        $update_stmt->bindParam(1, $post['id_post'], PDO::PARAM_INT);
+        $update_stmt->bindParam(2, $post['id_post'], PDO::PARAM_INT);
+        $update_stmt->bindParam(3, $post['id_post'], PDO::PARAM_INT);
+        $update_stmt->execute();
+
+        // Refetch the post with updated counts
+        $stmt->execute();
+        $post = $stmt->fetch(PDO::FETCH_ASSOC);
     }
 } catch(PDOException $e) {
     header('Location: ./');
@@ -181,6 +204,229 @@ $sport_categories = getSportCategories($post['etiquetas']);
     <link href="assets/vendor/slick/slick.css" rel="stylesheet">
     <link href="assets/css/style-esports.css" rel="stylesheet">
     <link href="assets/css/custom.css" rel="stylesheet">
+
+    <style>
+        /* Likes and Comments Styles */
+        .post-interactions {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .post-likes-section {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .post-stats {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .like-count, .comment-count-display {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-like {
+            background: none;
+            border: 1px solid #dee2e6;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #495057;
+        }
+
+        .btn-like:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .btn-like.liked {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .btn-like.liked i {
+            color: white;
+        }
+
+        .btn-like i {
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .comments-section h4 {
+            margin-bottom: 1.5rem;
+            color: #495057;
+            font-size: 1.3rem;
+        }
+
+        .comment-form-section {
+            margin-bottom: 2rem;
+        }
+
+        .comment-form {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .comment-input {
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 0.75rem;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .comment-input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .comment-form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .char-count {
+            font-size: 0.8rem;
+        }
+
+        .comment-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 1rem;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .comment-date {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .comment-content {
+            color: #495057;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .comment-actions button {
+            background: none;
+            border: none;
+            color: #007bff;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 0;
+        }
+
+        .comment-actions button:hover {
+            text-decoration: underline;
+        }
+
+        .reply-form {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .reply-input {
+            width: 100%;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .replies {
+            margin-left: 2rem;
+            margin-top: 1rem;
+        }
+
+        .reply-item {
+            background: #f8f9fa;
+            border-left: 3px solid #007bff;
+        }
+
+        .loading-comments, .no-comments {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .post-interactions {
+                margin: 1rem -15px 0;
+                padding: 1rem 15px;
+                border-radius: 0;
+            }
+
+            .replies {
+                margin-left: 1rem;
+            }
+
+            .comment-form-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+    </style>
 </head>
 <body data-template="template-esports">
 
@@ -205,17 +451,6 @@ $sport_categories = getSportCategories($post['etiquetas']);
                 <div class="container">
                     <div class="header__top-bar-inner">
                         <!-- Social Links -->
-                        <ul class="social-links social-links--inline social-links--main-nav social-links--top-bar">
-                            <li class="social-links__item">
-                                <a href="#" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="Facebook"><i class="fab fa-facebook"></i></a>
-                            </li>
-                            <li class="social-links__item">
-                                <a href="#" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="Twitter"><i class="fab fa-twitter"></i></a>
-                            </li>
-                            <li class="social-links__item">
-                                <a href="#" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="Instagram"><i class="fab fa-instagram"></i></a>
-                            </li>
-                        </ul>
                         
                         <!-- Account Navigation -->
                         <ul class="nav-account">
@@ -329,6 +564,54 @@ $sport_categories = getSportCategories($post['etiquetas']);
 
                         </article>
                         <!-- Article / End -->
+
+                        <!-- Likes and Comments Section -->
+                        <div class="post-interactions">
+                            <!-- Like Section -->
+                            <div class="post-likes-section">
+                                <div class="post-stats">
+                                    <span class="like-count"><?php echo intval($post['like_count'] ?? 0); ?></span>
+                                    <span class="like-text">me gusta</span>
+                                    <span class="comment-count-display"><?php echo intval($post['comment_count'] ?? 0); ?></span>
+                                    <span class="comment-text">comentarios</span>
+                                </div>
+                                <div class="post-actions">
+                                    <button class="btn-like" data-post-id="<?php echo $post['id_post']; ?>">
+                                        <i class="far fa-heart"></i>
+                                        <span class="like-btn-text">Me gusta</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Comments Section -->
+                            <div class="comments-section" id="comments">
+                                <h4>Comentarios</h4>
+
+                                <!-- Comment Form -->
+                                <div class="comment-form-section">
+                                    <form class="comment-form" data-post-id="<?php echo $post['id_post']; ?>">
+                                        <div class="form-group">
+                                            <textarea class="form-control comment-input" placeholder="Escribe tu comentario..." rows="3" maxlength="1000"></textarea>
+                                        </div>
+                                        <div class="comment-form-actions">
+                                            <small class="text-muted char-count">0/1000 caracteres</small>
+                                            <button type="submit" class="btn btn-primary">Comentar</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- Comments List -->
+                                <div class="comments-list">
+                                    <div class="loading-comments" style="display: none;">
+                                        <p>Cargando comentarios...</p>
+                                    </div>
+                                    <div class="no-comments" style="display: none;">
+                                        <p>Sé el primero en comentar este artículo.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Likes and Comments Section / End -->
                     </div>
                     <!-- Content / End -->
                 </div>
@@ -481,6 +764,284 @@ $sport_categories = getSportCategories($post['etiquetas']);
     <script src="assets/js/core.js"></script>
     <script src="assets/js/init.js"></script>
     <script src="assets/js/custom.js"></script>
+
+    <script>
+        // Likes and Comments Functionality
+        $(document).ready(function() {
+            const postId = <?php echo $post['id_post']; ?>;
+            let userLiked = false;
+
+            // Initialize likes and comments
+            initializeLikes();
+            loadComments();
+
+            // Character counter for comment form
+            $('.comment-input').on('input', function() {
+                const length = $(this).val().length;
+                $(this).closest('.comment-form').find('.char-count').text(length + '/1000 caracteres');
+            });
+
+            // Like button functionality
+            $('.btn-like').on('click', function() {
+                toggleLike();
+            });
+
+            // Comment form submission
+            $('.comment-form').on('submit', function(e) {
+                e.preventDefault();
+                submitComment($(this));
+            });
+
+            // Functions
+            function initializeLikes() {
+                $.get('api/likes.php', { post_id: postId })
+                    .done(function(response) {
+                        if (response.success !== false) {
+                            $('.like-count').text(response.like_count);
+                            userLiked = response.liked;
+                            updateLikeButton();
+                        }
+                    })
+                    .fail(function() {
+                        // User not logged in, hide like button or show login prompt
+                        $('.btn-like').hide();
+                    });
+            }
+
+            function toggleLike() {
+                $.ajax({
+                    url: 'api/likes.php',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ post_id: postId })
+                })
+                .done(function(response) {
+                    if (response.success) {
+                        $('.like-count').text(response.like_count);
+                        userLiked = response.liked;
+                        updateLikeButton();
+                    }
+                })
+                .fail(function(xhr) {
+                    const response = xhr.responseJSON;
+                    if (xhr.status === 401) {
+                        alert('Debes iniciar sesión para dar me gusta a las publicaciones.');
+                        window.location.href = '../admin/';
+                    } else {
+                        alert(response?.error || 'Error al procesar el me gusta');
+                    }
+                });
+            }
+
+            function updateLikeButton() {
+                const $btn = $('.btn-like');
+                const $icon = $btn.find('i');
+                const $text = $btn.find('.like-btn-text');
+
+                if (userLiked) {
+                    $btn.addClass('liked');
+                    $icon.removeClass('far').addClass('fas');
+                    $text.text('Me gusta');
+                } else {
+                    $btn.removeClass('liked');
+                    $icon.removeClass('fas').addClass('far');
+                    $text.text('Me gusta');
+                }
+            }
+
+            function loadComments() {
+                $('.loading-comments').show();
+                $('.no-comments').hide();
+
+                $.get('api/comments.php', { post_id: postId })
+                    .done(function(response) {
+                        $('.loading-comments').hide();
+                        if (response.success && response.comments.length > 0) {
+                            displayComments(response.comments);
+                            $('.comment-count-display').text(response.total_count);
+                        } else {
+                            $('.no-comments').show();
+                        }
+                    })
+                    .fail(function() {
+                        $('.loading-comments').hide();
+                        $('.comments-list').html('<p class="text-danger">Error al cargar comentarios.</p>');
+                    });
+            }
+
+            function displayComments(comments) {
+                const $commentsList = $('.comments-list');
+                $commentsList.empty();
+
+                comments.forEach(function(comment) {
+                    const commentHtml = createCommentHtml(comment);
+                    $commentsList.append(commentHtml);
+                });
+
+                // Bind reply functionality
+                bindReplyEvents();
+            }
+
+            function createCommentHtml(comment) {
+                let repliesHtml = '';
+                if (comment.replies && comment.replies.length > 0) {
+                    repliesHtml = '<div class="replies">';
+                    comment.replies.forEach(function(reply) {
+                        repliesHtml += createCommentHtml(reply, true);
+                    });
+                    repliesHtml += '</div>';
+                }
+
+                const isReply = arguments[1] || false;
+                const commentClass = isReply ? 'comment-item reply-item' : 'comment-item';
+
+                return `
+                    <div class="${commentClass}" data-comment-id="${comment.id_comment}">
+                        <div class="comment-header">
+                            <span class="comment-author">${comment.nombre} ${comment.apellido}</span>
+                            <span class="comment-date">${comment.fecha_comentario_formatted}</span>
+                        </div>
+                        <div class="comment-content">${comment.contenido}</div>
+                        <div class="comment-actions">
+                            ${!isReply ? '<button class="reply-btn" data-comment-id="' + comment.id_comment + '">Responder</button>' : ''}
+                        </div>
+                        ${repliesHtml}
+                    </div>
+                `;
+            }
+
+            function bindReplyEvents() {
+                $('.reply-btn').off('click').on('click', function() {
+                    const commentId = $(this).data('comment-id');
+                    const $comment = $(this).closest('.comment-item');
+
+                    // Remove any existing reply forms
+                    $('.reply-form').remove();
+
+                    // Add reply form
+                    const replyFormHtml = `
+                        <div class="reply-form">
+                            <form class="reply-form-element" data-parent-id="${commentId}">
+                                <textarea class="reply-input" placeholder="Escribe tu respuesta..." rows="2" maxlength="1000"></textarea>
+                                <div class="comment-form-actions">
+                                    <small class="text-muted reply-char-count">0/1000 caracteres</small>
+                                    <div>
+                                        <button type="button" class="btn btn-secondary btn-sm cancel-reply">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary btn-sm">Responder</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    `;
+
+                    $comment.append(replyFormHtml);
+
+                    // Focus on the reply input
+                    $comment.find('.reply-input').focus();
+
+                    // Bind character counter for reply
+                    $comment.find('.reply-input').on('input', function() {
+                        const length = $(this).val().length;
+                        $comment.find('.reply-char-count').text(length + '/1000 caracteres');
+                    });
+
+                    // Bind cancel button
+                    $comment.find('.cancel-reply').on('click', function() {
+                        $('.reply-form').remove();
+                    });
+
+                    // Bind reply form submission
+                    $comment.find('.reply-form-element').on('submit', function(e) {
+                        e.preventDefault();
+                        submitReply($(this));
+                    });
+                });
+            }
+
+            function submitComment($form) {
+                const content = $form.find('.comment-input').val().trim();
+
+                if (!content) {
+                    alert('Por favor escribe un comentario.');
+                    return;
+                }
+
+                const $submitBtn = $form.find('button[type="submit"]');
+                $submitBtn.prop('disabled', true).text('Enviando...');
+
+                $.ajax({
+                    url: 'api/comments.php',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        post_id: postId,
+                        contenido: content
+                    })
+                })
+                .done(function(response) {
+                    if (response.success) {
+                        $form.find('.comment-input').val('');
+                        $form.find('.char-count').text('0/1000 caracteres');
+                        loadComments(); // Reload comments to show the new one
+                    }
+                })
+                .fail(function(xhr) {
+                    const response = xhr.responseJSON;
+                    if (xhr.status === 401) {
+                        alert('Debes iniciar sesión para comentar.');
+                        window.location.href = '../admin/';
+                    } else {
+                        alert(response?.error || 'Error al enviar comentario');
+                    }
+                })
+                .always(function() {
+                    $submitBtn.prop('disabled', false).text('Comentar');
+                });
+            }
+
+            function submitReply($form) {
+                const content = $form.find('.reply-input').val().trim();
+                const parentId = $form.data('parent-id');
+
+                if (!content) {
+                    alert('Por favor escribe una respuesta.');
+                    return;
+                }
+
+                const $submitBtn = $form.find('button[type="submit"]');
+                $submitBtn.prop('disabled', true).text('Enviando...');
+
+                $.ajax({
+                    url: 'api/comments.php',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        post_id: postId,
+                        contenido: content,
+                        parent_comment_id: parentId
+                    })
+                })
+                .done(function(response) {
+                    if (response.success) {
+                        $('.reply-form').remove();
+                        loadComments(); // Reload comments to show the new reply
+                    }
+                })
+                .fail(function(xhr) {
+                    const response = xhr.responseJSON;
+                    if (xhr.status === 401) {
+                        alert('Debes iniciar sesión para responder.');
+                        window.location.href = '../admin/';
+                    } else {
+                        alert(response?.error || 'Error al enviar respuesta');
+                    }
+                })
+                .always(function() {
+                    $submitBtn.prop('disabled', false).text('Responder');
+                });
+            }
+        });
+    </script>
 
 </body>
 </html>

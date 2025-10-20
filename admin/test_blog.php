@@ -1,5 +1,5 @@
 <?php
-include "conn.php";
+require_once "conn.php";
 include "blog_functions.php";
 
 echo "<h1>Test del Blog en App Folder</h1>";

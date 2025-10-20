@@ -1,5 +1,5 @@
 <?php
-include "conn.php";
+require_once "conn.php";
 include "tournament_management.php";
 
 // Get tournament ID from URL

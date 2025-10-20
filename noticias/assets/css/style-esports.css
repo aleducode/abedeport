@@ -17254,7 +17254,6 @@ ul.posts:not(.post-grid) {
 }
 
 .meta__item--comments::before {
-  content: "\e07d";
   font-size: 12px;
 }
 

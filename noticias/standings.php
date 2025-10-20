@@ -131,6 +131,87 @@ if ($selected_sport) {
 	<!-- Custom CSS-->
 	<link href="assets/css/custom.css" rel="stylesheet">
 	
+
+	<style>
+	/* Print Styles */
+	@media print {
+		/* Hide everything except the table being printed */
+		body * {
+			visibility: hidden;
+		}
+		
+		.print-area, .print-area * {
+			visibility: visible;
+		}
+		
+		.print-area {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+		}
+		
+		/* Hide navigation, filters, footer, etc. */
+		.header, .footer, .page-heading, .content-filter,
+		.sponsors-wrapper, .breadcrumb, .print-table-btn,
+		.badge, .site-overlay {
+			display: none !important;
+		}
+		
+		/* Clean table styling for print */
+		.table {
+			border-collapse: collapse;
+			width: 100%;
+			font-size: 10pt;
+		}
+		
+		.table th, .table td {
+			border: 1px solid #000;
+			padding: 8px;
+		}
+		
+		.table thead {
+			background-color: #f0f0f0;
+		}
+		
+		.card__header h4 {
+			margin-bottom: 15px;
+			font-size: 14pt;
+			font-weight: bold;
+		}
+		
+		/* Remove shadows and borders */
+		.card {
+			box-shadow: none;
+			border: none;
+		}
+		
+		/* Make sure logos print */
+		.team-meta__logo img {
+			max-width: 30px;
+			max-height: 30px;
+		}
+		
+		/* Page break control */
+		.card {
+			page-break-after: always;
+		}
+		
+		.card:last-child {
+			page-break-after: auto;
+		}
+	}
+	
+	/* Print button styling */
+	.print-table-btn {
+		cursor: pointer;
+		transition: all 0.3s ease;
+	}
+	
+	.print-table-btn:hover {
+		transform: translateY(-2px);
+	}
+	</style>
 	<!-- Override preloader CSS for this page -->
 	<style>
 	body.page-loader-disable {
@@ -168,18 +249,6 @@ if ($selected_sport) {
 					<div class="header__top-bar-inner">
 			
 						<!-- Social Links -->
-						<ul class="social-links social-links--inline social-links--main-nav social-links--top-bar">
-							<li class="social-links__item">
-								<a href="#" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="Facebook"><i class="fab fa-facebook"></i></a>
-							</li>
-							<li class="social-links__item">
-								<a href="#" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="Twitter"><i class="fab fa-twitter"></i></a>
-							</li>
-							<li class="social-links__item">
-								<a href="#" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="Instagram"><i class="fab fa-instagram"></i></a>
-							</li>
-						</ul>
-						<!-- Social Links / End -->
 			
 						<!-- Account Navigation -->
 						<ul class="nav-account">
@@ -312,7 +381,7 @@ if ($selected_sport) {
 						if (!empty($tournament_standings)):
 						?>
 						<!-- Tournament Standings -->
-						<div class="card card--has-table mb-4">
+						<div class="card card--has-table mb-4" id="tournament-<?php echo $tournament['id_tournament']; ?>">
 							<div class="card__header">
 								<h4><?php echo htmlspecialchars($tournament['nombre']); ?> - <?php echo ucfirst(htmlspecialchars($tournament['deporte'])); ?></h4>
 								<div class="card__header-meta">
@@ -320,6 +389,9 @@ if ($selected_sport) {
 									<?php if (!empty($tournament['temporada'])): ?>
 									<span class="badge badge-secondary ml-2">Temporada <?php echo htmlspecialchars($tournament['temporada']); ?></span>
 									<?php endif; ?>
+									<button class="btn btn-sm btn-outline-primary ml-2 print-table-btn" onclick="printTable(<?php echo $tournament['id_tournament']; ?>)" title="Imprimir tabla">
+										<i class="fas fa-print"></i> Imprimir
+									</button>
 								</div>
 							</div>
 							<div class="card__content">
@@ -503,6 +575,169 @@ if ($selected_sport) {
 	$(document).ready(function() {
 		$('body').show();
 	});
+	</script>
+
+
+</body>
+</html>
+	<script>
+	/**
+	 * Print a specific tournament table
+	 * @param {number} tournamentId - The ID of the tournament to print
+	 */
+	function printTable(tournamentId) {
+		// Get the tournament card element
+		var tournamentCard = document.getElementById('tournament-' + tournamentId);
+		
+		if (!tournamentCard) {
+			alert('No se pudo encontrar la tabla para imprimir');
+			return;
+		}
+		
+		// Clone the card to avoid modifying the original
+		var printContent = tournamentCard.cloneNode(true);
+		
+		// Remove the print button and badges from the cloned content
+		var printBtn = printContent.querySelector('.print-table-btn');
+		if (printBtn) {
+			printBtn.remove();
+		}
+		
+		var badges = printContent.querySelectorAll('.badge');
+		badges.forEach(function(badge) {
+			badge.remove();
+		});
+		
+		// Get the HTML content
+		var htmlContent = printContent.innerHTML;
+		
+		// Create print styles
+		var printStyles = `
+			<style>
+				* { margin: 0; padding: 0; box-sizing: border-box; }
+				body { 
+					font-family: Arial, sans-serif; 
+					padding: 20px;
+					color: #000;
+				}
+				.card { 
+					border: none; 
+					box-shadow: none; 
+					margin-bottom: 20px;
+				}
+				.card__header h4 { 
+					margin-bottom: 15px; 
+					color: #000;
+					font-size: 18px;
+					font-weight: bold;
+				}
+				.card__content {
+					padding: 0;
+				}
+				.table-responsive {
+					overflow: visible;
+				}
+				.table { 
+					border-collapse: collapse; 
+					width: 100%; 
+					margin-top: 10px;
+					font-size: 11px;
+				}
+				.table th, .table td { 
+					border: 1px solid #333; 
+					padding: 6px 4px;
+					text-align: center;
+					color: #000;
+				}
+				.table thead th { 
+					background-color: #e0e0e0;
+					font-weight: bold;
+				}
+				.table tbody tr:nth-child(even) {
+					background-color: #f5f5f5;
+				}
+				.team-meta { 
+					text-align: left !important;
+					display: flex;
+					align-items: center;
+					gap: 8px;
+				}
+				.team-meta__logo { 
+					margin: 0;
+					flex-shrink: 0;
+				}
+				.team-meta__logo img { 
+					max-width: 25px; 
+					max-height: 25px;
+					display: block;
+				}
+				.team-meta__info {
+					flex-grow: 1;
+				}
+				.team-meta__name { 
+					margin: 0;
+					font-size: 11px;
+					font-weight: bold;
+					color: #000;
+				}
+				.team-meta__place { 
+					font-size: 9px;
+					color: #666;
+					display: block;
+				}
+				.highlighted {
+					background-color: #fff3cd !important;
+				}
+				.text-success { color: #28a745 !important; }
+				.text-danger { color: #dc3545 !important; }
+				.text-muted { color: #6c757d !important; }
+				.text-primary { color: #007bff !important; font-weight: bold; }
+				@media print {
+					body { padding: 10px; }
+				}
+			</style>
+		`;
+		
+		// Create the full HTML document
+		var printDocument = `
+			<!DOCTYPE html>
+			<html>
+			<head>
+				<meta charset="UTF-8">
+				<title>Tabla de Posiciones</title>
+				${printStyles}
+			</head>
+			<body>
+				${htmlContent}
+			</body>
+			</html>
+		`;
+		
+		// Open a new window
+		var printWindow = window.open('', '_blank', 'width=800,height=600');
+		
+		if (!printWindow) {
+			alert('Por favor, permita las ventanas emergentes para imprimir');
+			return;
+		}
+		
+		// Write the document
+		printWindow.document.open();
+		printWindow.document.write(printDocument);
+		printWindow.document.close();
+		
+		// Wait for images to load, then print
+		printWindow.onload = function() {
+			setTimeout(function() {
+				printWindow.focus();
+				printWindow.print();
+				// Close after printing or canceling
+				setTimeout(function() {
+					printWindow.close();
+				}, 100);
+			}, 500);
+		};
+	}
 	</script>
 
 </body>
