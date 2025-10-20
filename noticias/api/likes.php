@@ -19,16 +19,18 @@ $user_id = null;
 // For POST requests, authentication is required
 if ($method === 'POST') {
     // Check if user is logged in for POST requests
-    if (!isset($_SESSION['usuario'])) {
+    if (!isset($_SESSION['user_id'])) {
         http_response_code(401);
         echo json_encode(['error' => 'No autenticado']);
         exit();
     }
 
-    // Get user data for POST requests
+    $user_id = $_SESSION['user_id'];
+
+    // Verify user exists
     try {
-        $stmt = $conn->prepare("SELECT id_usuario FROM usuario WHERE correo = ?");
-        $stmt->bindParam(1, $_SESSION['usuario']);
+        $stmt = $conn->prepare("SELECT id_usuario FROM usuario WHERE id_usuario = ?");
+        $stmt->bindParam(1, $user_id, PDO::PARAM_INT);
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -37,8 +39,6 @@ if ($method === 'POST') {
             echo json_encode(['error' => 'Usuario no encontrado']);
             exit();
         }
-
-        $user_id = $user['id_usuario'];
     } catch(PDOException $e) {
         http_response_code(500);
         echo json_encode(['error' => 'Error de base de datos']);
@@ -46,19 +46,23 @@ if ($method === 'POST') {
     }
 } else if ($method === 'GET') {
     // For GET requests, get user data if logged in, otherwise user_id remains null
-    if (isset($_SESSION['usuario'])) {
+    if (isset($_SESSION['user_id'])) {
+        $user_id = $_SESSION['user_id'];
+
+        // Verify user exists
         try {
-            $stmt = $conn->prepare("SELECT id_usuario FROM usuario WHERE correo = ?");
-            $stmt->bindParam(1, $_SESSION['usuario']);
+            $stmt = $conn->prepare("SELECT id_usuario FROM usuario WHERE id_usuario = ?");
+            $stmt->bindParam(1, $user_id, PDO::PARAM_INT);
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($user) {
-                $user_id = $user['id_usuario'];
+            if (!$user) {
+                $user_id = null;
             }
         } catch(PDOException $e) {
             // If there's an error getting user data, just continue with user_id as null
             error_log("Error getting user data: " . $e->getMessage());
+            $user_id = null;
         }
     }
 }

@@ -1177,7 +1177,7 @@ $current_tournament = !empty($active_tournaments) ? $active_tournaments[0] : nul
 	<script>
 		$(document).ready(function() {
 			// Check if user is logged in
-			const isLoggedIn = <?php echo isset($_SESSION['usuario']) ? 'true' : 'false'; ?>;
+			const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
 
 			// Initialize like states for all posts
 			initializeLikes();

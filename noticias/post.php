@@ -989,7 +989,7 @@ $sport_categories = getSportCategories($post['etiquetas']);
                     const response = xhr.responseJSON;
                     if (xhr.status === 401) {
                         alert('Debes iniciar sesión para comentar.');
-                        window.location.href = '../admin/';
+                        window.location.href = '../noticias/login.php';
                     } else {
                         alert(response?.error || 'Error al enviar comentario');
                     }
