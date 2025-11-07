@@ -289,12 +289,6 @@
 								</div>
 								<header class="post__header">
 									<h2 class="post__title">Rutina de Ejercicios de Brazo - Fortalecimiento y Tonificación</h2>
-									<ul class="post__meta meta">
-										<li class="meta__item meta__item--date"><time datetime="2024-09-01">1 de Septiembre, 2024</time></li>
-										<li class="meta__item meta__item--views">1245</li>
-										<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> 89</a></li>
-										<li class="meta__item meta__item--comments"><a href="#">12</a></li>
-									</ul>
 								</header>
 							</div>
 							<div class="card__content">
@@ -321,12 +315,7 @@
 								</div>
 								<header class="post__header">
 									<h2 class="post__title">Cardio Intensivo 1 - Quema Grasa y Mejora tu Resistencia</h2>
-									<ul class="post__meta meta">
-										<li class="meta__item meta__item--date"><time datetime="2024-09-02">2 de Septiembre, 2024</time></li>
-										<li class="meta__item meta__item--views">2156</li>
-										<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> 134</a></li>
-										<li class="meta__item meta__item--comments"><a href="#">23</a></li>
-									</ul>
+							
 								</header>
 							</div>
 							<div class="card__content">
@@ -353,12 +342,6 @@
 								</div>
 								<header class="post__header">
 									<h2 class="post__title">Rutina de Mancuernas - Entrenamiento de Fuerza Completo</h2>
-									<ul class="post__meta meta">
-										<li class="meta__item meta__item--date"><time datetime="2024-09-03">3 de Septiembre, 2024</time></li>
-										<li class="meta__item meta__item--views">1687</li>
-										<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> 98</a></li>
-										<li class="meta__item meta__item--comments"><a href="#">19</a></li>
-									</ul>
 								</header>
 							</div>
 							<div class="card__content">
@@ -385,12 +368,7 @@
 								</div>
 								<header class="post__header">
 									<h2 class="post__title">Rutina de Ejercicios de Piernas - Fortalecimiento y Potencia</h2>
-									<ul class="post__meta meta">
-										<li class="meta__item meta__item--date"><time datetime="2024-09-04">4 de Septiembre, 2024</time></li>
-										<li class="meta__item meta__item--views">856</li>
-										<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> 67</a></li>
-										<li class="meta__item meta__item--comments"><a href="#">15</a></li>
-									</ul>
+							
 								</header>
 							</div>
 							<div class="card__content">
@@ -417,12 +395,6 @@
 								</div>
 								<header class="post__header">
 									<h2 class="post__title">Cardio Intensivo 3 - Entrenamiento Extremo de Resistencia</h2>
-									<ul class="post__meta meta">
-										<li class="meta__item meta__item--date"><time datetime="2024-09-05">5 de Septiembre, 2024</time></li>
-										<li class="meta__item meta__item--views">1543</li>
-										<li class="meta__item meta__item--likes"><a href="#"><i class="meta-like icon-heart"></i> 112</a></li>
-										<li class="meta__item meta__item--comments"><a href="#">28</a></li>
-									</ul>
 								</header>
 							</div>
 							<div class="card__content">
