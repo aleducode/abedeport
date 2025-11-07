@@ -157,15 +157,9 @@ $data = requireAdmin();
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo (isset($_GET['page']) && ($_GET['page'] == 'tournament_management' || $_GET['page'] == 'tournament_standings')) ? 'active' : ''; ?>" 
+                            <a class="nav-link <?php echo (isset($_GET['page']) && ($_GET['page'] == 'tournament_management' || $_GET['page'] == 'tournament_standings')) ? 'active' : ''; ?>"
                                href="?page=tournament_management">
                                 <i class="bi bi-trophy-fill me-1"></i>Torneos
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'team') ? 'active' : ''; ?>" 
-                               href="?page=team">
-                                <i class="bi bi-people-fill me-1"></i>Integrantes
                             </a>
                         </li>
 

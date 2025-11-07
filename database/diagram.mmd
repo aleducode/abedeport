@@ -1,0 +1,83 @@
+erDiagram
+    usuario ||--o{ blog_posts : "writes"
+    usuario ||--o{ post_likes : "likes"
+    usuario ||--o{ post_comments : "comments"
+    blog_posts ||--o{ post_likes : "has"
+    blog_posts ||--o{ post_comments : "has"
+    post_comments ||--o{ post_comments : "replies to"
+    tournaments ||--o{ equipos_tournament : "contains"
+
+    usuario {
+        INT id_usuario PK
+        VARCHAR nombre
+        VARCHAR apellido
+        VARCHAR correo UK
+        VARCHAR documento UK
+        TINYINT estado
+        TINYINT is_admin
+        VARCHAR password
+        VARCHAR red_social
+    }
+
+    blog_posts {
+        INT id_post PK
+        VARCHAR titulo
+        TEXT contenido
+        VARCHAR imagen
+        INT autor_id FK
+        ENUM estado
+        TIMESTAMP fecha_creacion
+        TIMESTAMP fecha_publicacion
+        TIMESTAMP fecha_actualizacion
+        VARCHAR slug UK
+        VARCHAR meta_descripcion
+        VARCHAR etiquetas
+        INT like_count
+        INT comment_count
+    }
+
+    tournaments {
+        INT id_tournament PK
+        VARCHAR nombre
+        ENUM deporte
+        VARCHAR temporada
+        ENUM estado
+        DATE fecha_inicio
+        DATE fecha_fin
+    }
+
+    equipos_tournament {
+        INT id_equipo_tournament PK
+        INT id_tournament FK
+        VARCHAR nombre_equipo
+        VARCHAR ciudad
+        VARCHAR pais
+        VARCHAR logo
+        INT partidos_jugados
+        INT partidos_ganados
+        INT partidos_perdidos
+        INT partidos_empatados
+        INT puntos_favor
+        INT puntos_contra
+        INT puntos_totales
+        INT posicion
+        TINYINT destacado
+    }
+
+    post_likes {
+        INT id_like PK
+        INT post_id FK
+        INT user_id FK
+        TIMESTAMP fecha_like
+    }
+
+    post_comments {
+        INT id_comment PK
+        INT post_id FK
+        INT user_id FK
+        TEXT contenido
+        TIMESTAMP fecha_comentario
+        TIMESTAMP fecha_actualizacion
+        ENUM estado
+        INT parent_comment_id FK
+    }

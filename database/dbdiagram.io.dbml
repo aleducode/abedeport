@@ -1,0 +1,104 @@
+// Use this at https://dbdiagram.io to generate visual diagram
+// Copy and paste this content into dbdiagram.io
+
+Table usuario {
+  id_usuario INT [pk, increment]
+  nombre VARCHAR(100)
+  apellido VARCHAR(100)
+  correo VARCHAR(100) [unique, not null]
+  documento VARCHAR(15) [unique, not null]
+  estado TINYINT
+  is_admin TINYINT [default: 0]
+  password VARCHAR(255) [not null]
+  red_social VARCHAR(45) [default: '']
+}
+
+Table blog_posts {
+  id_post INT [pk, increment]
+  titulo VARCHAR(255) [not null]
+  contenido TEXT [not null]
+  imagen VARCHAR(255)
+  autor_id INT [not null, ref: > usuario.id_usuario]
+  estado ENUM [default: 'borrador', note: 'borrador, publicado, archivado']
+  fecha_creacion TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  fecha_publicacion TIMESTAMP
+  fecha_actualizacion TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  slug VARCHAR(255) [unique]
+  meta_descripcion VARCHAR(160)
+  etiquetas VARCHAR(255)
+  like_count INT [default: 0]
+  comment_count INT [default: 0]
+
+  Indexes {
+    autor_id
+    estado
+    fecha_publicacion
+    like_count
+    comment_count
+  }
+}
+
+Table tournaments {
+  id_tournament INT [pk, increment]
+  nombre VARCHAR(100) [not null]
+  deporte ENUM [not null, note: 'futbol, futsal, baloncesto, voleibol']
+  temporada VARCHAR(50) [not null]
+  estado ENUM [default: 'activo', note: 'activo, finalizado, proximo']
+  fecha_inicio DATE
+  fecha_fin DATE
+}
+
+Table equipos_tournament {
+  id_equipo_tournament INT [pk, increment]
+  id_tournament INT [not null, ref: > tournaments.id_tournament]
+  nombre_equipo VARCHAR(100) [not null]
+  ciudad VARCHAR(100)
+  pais VARCHAR(100)
+  logo VARCHAR(255)
+  partidos_jugados INT [default: 0]
+  partidos_ganados INT [default: 0]
+  partidos_perdidos INT [default: 0]
+  partidos_empatados INT [default: 0]
+  puntos_favor INT [default: 0]
+  puntos_contra INT [default: 0]
+  puntos_totales INT [default: 0]
+  posicion INT
+  destacado TINYINT [default: 0]
+
+  Indexes {
+    id_tournament
+    (id_tournament, posicion)
+  }
+}
+
+Table post_likes {
+  id_like INT [pk, increment]
+  post_id INT [not null, ref: > blog_posts.id_post]
+  user_id INT [not null, ref: > usuario.id_usuario]
+  fecha_like TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    post_id
+    user_id
+    (post_id, user_id) [unique]
+  }
+}
+
+Table post_comments {
+  id_comment INT [pk, increment]
+  post_id INT [not null, ref: > blog_posts.id_post]
+  user_id INT [not null, ref: > usuario.id_usuario]
+  contenido TEXT [not null]
+  fecha_comentario TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  fecha_actualizacion TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  estado ENUM [default: 'activo', note: 'activo, moderado, eliminado']
+  parent_comment_id INT [ref: > post_comments.id_comment]
+
+  Indexes {
+    post_id
+    user_id
+    parent_comment_id
+    fecha_comentario
+    estado
+  }
+}
